@@ -111,6 +111,8 @@ export interface WardrobeExtra {
   name: string;
   price: number;
   images: Record<string, string>;
+  maxQuantity: number;
+  isDefault: boolean;
 }
 
 // ─── Configurator State ──────────────────────────────────────────
@@ -133,7 +135,7 @@ export interface WardrobeConfiguratorState {
 
   // Step 5
   wardrobeStilesAndTracksId: string | null;
-  wardrobeSelectedExtraIds: string[];
+  wardrobeSelectedExtras: Record<string, number>;
 
   // Final
   wardrobeDoorLastCompletedStep: number;
@@ -142,7 +144,7 @@ export interface WardrobeConfiguratorState {
 // ─── UI State ────────────────────────────────────
 
 export interface WardrobeUIState {
-  roomColour: string; // hex or colour name, default '#ffffff'
+  roomColour: string;
 }
 
 // ─── Initial States ───────────────────────────────────────────────────────────
@@ -157,7 +159,7 @@ export function createInitialWardrobeState(): WardrobeConfiguratorState {
     wardrobeDoorMelamineColourId: null,
     wardrobeDoorConfigurations: [],
     wardrobeStilesAndTracksId: null,
-    wardrobeSelectedExtraIds: [],
+    wardrobeSelectedExtras: {},
     wardrobeDoorLastCompletedStep: 0,
   };
 }

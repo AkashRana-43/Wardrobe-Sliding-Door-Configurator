@@ -33,7 +33,7 @@ State is modeled as WardrobeConfiguratorState with explicit step progression:
   - Mirror Panel Addition
 - Stiles/Tracks + Extras
  -Stiles & tracks selection with colour + price
- -Extras as optional
+ -Extras as default and optional(Depends on the Wardrobe Type)
   
 # Data sources
 
