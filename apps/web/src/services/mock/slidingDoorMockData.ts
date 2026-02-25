@@ -15,28 +15,30 @@ export const wardrobeTypes: WardrobeType[] = [
   {
     id: "WALL_TO_WALL",
     name: "Wall to Wall",
-    description: "Fits flush between two existing walls. No end panels required.",
+    description: "Fits between two existing walls. No end panels required.",
     image: "/images/wardrobe-types/wall-to-wall.jpg",
     price: 0,
   },
   {
     id: "WALL_TO_END_PANEL",
     name: "Wall to End Panel",
-    description: "Fixed to a wall on the left, finished with an end panel on the right.",
+    description:
+      "Fixed to a wall on the left, finished with an end panel on the right.",
     image: "/images/wardrobe-types/wall-to-end-panel.jpg",
     price: 0,
   },
   {
     id: "END_PANEL_TO_WALL",
     name: "End Panel to Wall",
-    description: "Finished with an end panel on the left, fixed to a wall on the right.",
+    description:
+      "Finished with an end panel on the left, fixed to a wall on the right.",
     image: "/images/wardrobe-types/end-panel-to-wall.jpg",
     price: 0,
   },
   {
     id: "END_PANEL_TO_END_PANEL",
     name: "End Panel to End Panel",
-    description: "Fully freestanding finish. End panels close off both sides.",
+    description: "End panels on both sides.",
     image: "/images/wardrobe-types/end-panel-to-end-panel.jpg",
     price: 0,
   },
@@ -125,7 +127,7 @@ export const wardrobeDoorMelamineColours: WardrobeDoorMelamineColour[] = [
     id: "white-ash",
     name: "White Ash",
     image: "/images/melamine-colours/white-ash.jpg",
-    hexPreview: "#E8DDD0", 
+    hexPreview: "#E8DDD0",
   },
   {
     id: "vanilla",
@@ -137,7 +139,7 @@ export const wardrobeDoorMelamineColours: WardrobeDoorMelamineColour[] = [
     id: "lemon-tree",
     name: "Lemon Tree",
     image: "/images/melamine-colours/lemon-tree.jpg",
-    hexPreview: "#D4B483", 
+    hexPreview: "#D4B483",
   },
   {
     id: "ivory",
@@ -236,13 +238,6 @@ export const wardrobeStilesAndTracks: WardrobeStilesAndTracks[] = [
     image: "/images/stiles-and-tracks/matte-silver.jpg",
   },
   {
-    id: "stiles-tracks-grey",
-    name: "Grey",
-    colour: "#808080",
-    price: 0,
-    image: "/images/stiles-and-tracks/grey.jpg",
-  },
-  {
     id: "stiles-tracks-white",
     name: "White",
     colour: "#FAFAFA",
@@ -256,56 +251,98 @@ export const wardrobeStilesAndTracks: WardrobeStilesAndTracks[] = [
     price: 0,
     image: "/images/stiles-and-tracks/birch.jpg",
   },
-  {
-    id:"stiles-tracks-almond-ivory",
-    name: "Almond Ivory",
-    colour: "#FFFFF0",
-    price: 0,
-    image: "/images/stiles-and-tracks/almond-ivory.jpg",
-  }
 ];
 
 // ─── Extras ───────────────────────────────────────────────────────────────────
 
 export const wardrobeExtras: WardrobeExtra[] = [
+  // ─── Default —————————————————————————————──────────────────
   {
     id: "extra-top-track",
     name: "Top Track",
     price: 0,
+    isDefault: true,
+    maxQuantity: 1,
     images: {
-      default: "/images/extras/top-track.jpg",
+      "stiles-tracks-silver": "/images/extras/top-track-silver.jpg",
+      "stiles-tracks-satin-black": "/images/extras/top-track-satin-black.jpg",
+      "stiles-tracks-matte-silver": "/images/extras/top-track-matte-silver.jpg",
+      "stiles-tracks-white": "/images/extras/top-track-white.jpg",
+      "stiles-tracks-birch": "/images/extras/top-track-birch.jpg",
     },
   },
   {
     id: "extra-bottom-track",
     name: "Bottom Track",
     price: 0,
+    isDefault: true,
+    maxQuantity: 1,
     images: {
-      default: "/images/extras/bottom-track.jpg",
+      "stiles-tracks-silver": "/images/extras/bottom-track-silver.jpg",
+      "stiles-tracks-satin-black": "/images/extras/bottom-track-satin-black.jpg",
+      "stiles-tracks-matte-silver": "/images/extras/bottom-track-matte-silver.jpg",
+      "stiles-tracks-white": "/images/extras/bottom-track-white.jpg",
+      "stiles-tracks-birch": "/images/extras/bottom-track-birch.jpg",
+    },
+  },
+
+  // ─── Optional —————————————————————————————──────────────────
+  {
+    id: "extra-wall-channel",
+    name: "Wall Channel",
+    price: 0,
+    isDefault: false,
+    maxQuantity: 2,
+    images: {
+      "stiles-tracks-silver": "/images/extras/wall-channel-silver.jpg",
+      "stiles-tracks-satin-black": "/images/extras/wall-channel-satin-black.jpg",
+      "stiles-tracks-matte-silver": "/images/extras/wall-channel-matte-silver.jpg",
+      "stiles-tracks-white": "/images/extras/wall-channel-white.jpg",
+      "stiles-tracks-birch": "/images/extras/wall-channel-birch.jpg",
+    },
+  },
+  {
+    id: "extra-end-panel",
+    name: "End Panel",
+    price: 0,
+    isDefault: false,
+    maxQuantity: 2,
+    images: {
+      "white-ash": "/images/extras/end-panel-white-ash.jpg",
+      "vanilla": "/images/extras/end-panel-vanilla.jpg",
+      "lemon-tree": "/images/extras/end-panel-lemon-tree.jpg",
+      "ivory": "/images/extras/end-panel-ivory.jpg",
+      "devine-oak": "/images/extras/end-panel-devine-oak.jpg",
+      "cloud-grey": "/images/extras/end-panel-cloud-grey.jpg",
+      "polar-white": "/images/extras/end-panel-polar-white.jpg",
     },
   },
   {
     id: "extra-16mm-end-panel-receiving-channel",
     name: "16mm End Panel Receiving Channel",
     price: 0,
+    isDefault: false,
+    maxQuantity: 2,
     images: {
-      default: "/images/extras/16mm-end-panel-receiving-channel.jpg",
-    },
-  },
-  {
-    id: "extra-wall-channel",
-    name: "Wall Channel",
-    price: 0,
-    images: {
-      default: "/images/extras/wall-channel.jpg",
+      "stiles-tracks-silver": "/images/extras/16mm-end-panel-receiving-channel-silver.jpg",
+      "stiles-tracks-satin-black": "/images/extras/16mm-end-panel-receiving-channel-satin-black.jpg",
+      "stiles-tracks-matte-silver": "/images/extras/16mm-end-panel-receiving-channel-matte-silver.jpg",
+      "stiles-tracks-white": "/images/extras/16mm-end-panel-receiving-channel-white.jpg",
+      "stiles-tracks-birch": "/images/extras/16mm-end-panel-receiving-channel-birch.jpg",
     },
   },
   {
     id: "extra-16mm-end-panel-return-channel",
     name: "16mm End Panel Return Channel",
     price: 0,
+    isDefault: false,
+    maxQuantity: 2,
     images: {
-      default: "/images/extras/16mm-end-panel-return-channel.jpg",
+      "stiles-tracks-silver": "/images/extras/16mm-end-panel-return-channel-silver.jpg",
+      "stiles-tracks-satin-black": "/images/extras/16mm-end-panel-return-channel-satin-black.jpg",
+      "stiles-tracks-matte-silver": "/images/extras/16mm-end-panel-return-channel-matte-silver.jpg",
+      "stiles-tracks-white": "/images/extras/16mm-end-panel-return-channel-white.jpg",
+      "stiles-tracks-birch": "/images/extras/16mm-end-panel-return-channel-birch.jpg",
     },
-  }
+  },
 ];
