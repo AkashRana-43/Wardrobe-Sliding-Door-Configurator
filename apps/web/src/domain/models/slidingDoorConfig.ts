@@ -18,22 +18,6 @@ export interface WardrobeType {
   price: number;
 }
 
-// ─── Door Style ───────────────────────────────────────────────────────────────
-
-export const WardrobeDoorStyleId = {
-  PLAIN: "PLAIN",
-  MULTI_PANEL: "MULTI_PANEL",
-} as const;
-
-export type WardrobeDoorStyleId =
-  (typeof WardrobeDoorStyleId)[keyof typeof WardrobeDoorStyleId];
-
-export interface WardrobeDoorStyle {
-  id: WardrobeDoorStyleId;
-  name: string;
-  image: string;
-}
-
 // ─── Dimensions ───────────────────────────────────────────────────────────────
 
 export interface WardrobeDimensions {
@@ -48,7 +32,7 @@ export interface WardrobeDimensionConstraints {
   maxHeightMm: number;
 }
 
-// ─── Width Ranges for Door Count ────────────────────────────────────────────────
+// ─── Width Ranges for Door Count ─────────────────────────────────────────────
 
 export interface WardrobeWidthRange {
   id: string;
@@ -67,15 +51,6 @@ export interface WardrobeDoorMelamineColour {
   hexPreview: string;
 }
 
-// ─── Multi-Panel ──────────────────────────────────────────────────────────────
-
-export interface WardrobeDoorMultiPanelOption {
-  id: string;
-  panelCount: 3 | 4;
-  price: number;
-  image: string;
-}
-
 // ─── Door Inserts ─────────────────────────────────────────────────────────────
 
 export interface WardrobeDoorInsert {
@@ -89,8 +64,6 @@ export interface WardrobeDoorInsert {
 
 export interface WardrobeDoorConfiguration {
   doorIndex: number;
-  multiPanelCount: 3 | 4 | null;
-  mirroredPanels: boolean[];
   insertId: string | null;
 }
 
@@ -115,7 +88,7 @@ export interface WardrobeExtra {
   isDefault: boolean;
 }
 
-// ─── Configurator State ──────────────────────────────────────────
+// ─── Configurator State ───────────────────────────────────────────────────────
 
 export interface WardrobeConfiguratorState {
   // Step 1
@@ -129,7 +102,6 @@ export interface WardrobeConfiguratorState {
   wardrobeDoorCount: number | null;
 
   // Step 4
-  wardrobeDoorStyleId: WardrobeDoorStyleId | null;
   wardrobeDoorMelamineColourId: string | null;
   wardrobeDoorConfigurations: WardrobeDoorConfiguration[];
 
@@ -141,10 +113,28 @@ export interface WardrobeConfiguratorState {
   wardrobeDoorLastCompletedStep: number;
 }
 
-// ─── UI State ────────────────────────────────────
+// ─── UI State ─────────────────────────────────────────────────────────────────
 
 export interface WardrobeUIState {
   roomColour: string;
+}
+
+// ─── Cart ─────────────────────────────────────────────────────────────────────
+
+export interface CartItem {
+  id: string;
+  wardrobeSnapshot: WardrobeConfiguratorState;
+  priceBreakdown: PriceBreakdown;
+  addedAt: number;
+}
+
+export interface PriceBreakdown {
+  basePrice: number;
+  wardrobeTypePrice: number;
+  insertPrice: number;
+  stilesAndTracksPrice: number;
+  extrasPrice: number;
+  total: number;
 }
 
 // ─── Initial States ───────────────────────────────────────────────────────────
@@ -155,7 +145,6 @@ export function createInitialWardrobeState(): WardrobeConfiguratorState {
     wardrobeDimensions: null,
     wardrobeSelectedRangeId: null,
     wardrobeDoorCount: null,
-    wardrobeDoorStyleId: null,
     wardrobeDoorMelamineColourId: null,
     wardrobeDoorConfigurations: [],
     wardrobeStilesAndTracksId: null,

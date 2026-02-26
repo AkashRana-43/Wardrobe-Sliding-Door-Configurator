@@ -25,12 +25,11 @@ State is modeled as WardrobeConfiguratorState with explicit step progression:
 - Dimensions: Width/height in mm with min/max validation constraints.
 - Width Range + Door Count Rules: Width selects a WardrobeWidthRange, unlocking only allowed door counts and applying a base price.
 - Door Style + Finish + Per-door Configuration:
- - Door style: Plain or MultiPanel
- - Finish: Melamine colour selection (Hex Preview for UI)
+ - Door style: Plain
+   - Finish: Melamine colour selection (Hex Preview for UI)
  -Per-door configuration with variable pricing:
-  - MultiPanel Count: 3 | 4 | null
-  - Premium Insert
-  - Mirror Panel Addition
+  - Premium Decor Insert
+  - Mirror
 - Stiles/Tracks + Extras
  -Stiles & tracks selection with colour + price
  -Extras as default and optional(Depends on the Wardrobe Type)

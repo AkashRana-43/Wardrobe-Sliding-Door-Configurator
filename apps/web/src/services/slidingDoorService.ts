@@ -2,9 +2,7 @@ import type { ISlidingDoorService } from "@/services/interfaces/slidingDoorServi
 import {
   wardrobeTypes,
   wardrobeWidthRanges,
-  wardrobeDoorStyles,
   wardrobeDoorMelamineColours,
-  wardrobeDoorMultiPanelOptions,
   wardrobeDoorInserts,
   wardrobeStilesAndTracks,
   wardrobeExtras,
@@ -13,9 +11,7 @@ import {
 export const slidingDoorService: ISlidingDoorService = {
   async getWardrobeTypes() { return wardrobeTypes; },
   async getWardrobeWidthRanges() { return wardrobeWidthRanges; },
-  async getWardrobeDoorStyles() { return wardrobeDoorStyles; },
   async getWardrobeDoorMelamineColours() { return wardrobeDoorMelamineColours; },
-  async getWardrobeDoorMultiPanelOptions() { return wardrobeDoorMultiPanelOptions; },
   async getWardrobeDoorInserts() { return wardrobeDoorInserts; },
   async getWardrobeStilesAndTracks() { return wardrobeStilesAndTracks; },
   async getWardrobeExtras() { return wardrobeExtras; },
