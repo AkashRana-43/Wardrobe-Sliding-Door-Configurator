@@ -1,11 +1,30 @@
 import { useWardrobeState } from "@/state/useWardrobeContext";
+import { calculateWardrobePrice } from "@/domain/pricing/wardrobePricing";
+import {
+  wardrobeTypes,
+  wardrobeWidthRanges,
+  wardrobeDoorInserts,
+  wardrobeStilesAndTracks,
+  wardrobeExtras,
+} from "@/services/mock/slidingDoorMockData";
+
+const catalogue = {
+  wardrobeTypes,
+  widthRanges: wardrobeWidthRanges,
+  doorInserts: wardrobeDoorInserts,
+  stilesAndTracks: wardrobeStilesAndTracks,
+  extras: wardrobeExtras,
+};
 
 export const StateTest = () => {
   const { state, dispatch } = useWardrobeState();
+  const breakdown = calculateWardrobePrice(state, catalogue);
 
   return (
     <div style={{ padding: 20, fontFamily: "monospace" }}>
       <h2>State Test</h2>
+
+      <pre>{JSON.stringify(breakdown, null, 2)}</pre>
 
       {/* Shows current state as raw JSON */}
       <pre>{JSON.stringify(state, null, 2)}</pre>
