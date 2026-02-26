@@ -1,10 +1,7 @@
-function App() {
+import { StateTest } from"@/components/StateTest";
 
-  return (
-    <>
-      <div>Wardrobe Configurator</div>
-    </>
-  )
+function App() {
+  return <StateTest />;
 }
 
 export default App
