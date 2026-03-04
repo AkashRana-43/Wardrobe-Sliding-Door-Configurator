@@ -17,8 +17,7 @@ export const CartAuthProvider = ({ children }: { children: ReactNode }) => {
     createInitialCartState
   );
 
-  // ─── Auth Actions ───────────────────────────────────────────────────────────
-
+  // ─── Auth Actions ─────────────────────────────────────────────────────────
   const login = useCallback(() => {
     authDispatch({ type: "LOGIN" });
   }, []);
@@ -27,14 +26,14 @@ export const CartAuthProvider = ({ children }: { children: ReactNode }) => {
     authDispatch({ type: "LOGOUT" });
   }, []);
 
-  // ─── Cart Actions ───────────────────────────────────────────────────────────
-
+  // ─── Cart Actions ─────────────────────────────────────────────────────────
   const addToCart = useCallback(
-    (item: Omit<CartItem, "id" | "addedAt">) => {
+    (item: Omit<CartItem, "id" | "addedAt" | "quantity">) => {
       cartDispatch({
         type: "ADD_ITEM",
         payload: {
           ...item,
+          quantity: 1,
           id: crypto.randomUUID(),
           addedAt: Date.now(),
         },
@@ -47,6 +46,10 @@ export const CartAuthProvider = ({ children }: { children: ReactNode }) => {
     cartDispatch({ type: "REMOVE_ITEM", payload: id });
   }, []);
 
+  const updateQuantity = useCallback((id: string, quantity: number) => {
+    cartDispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
+  }, []);
+
   const openCart = useCallback(() => {
     cartDispatch({ type: "OPEN_CART" });
   }, []);
@@ -55,16 +58,15 @@ export const CartAuthProvider = ({ children }: { children: ReactNode }) => {
     cartDispatch({ type: "CLOSE_CART" });
   }, []);
 
-  // ─── Memoised Context Values ────────────────────────────────────────────────
-
+  // ─── Memoised Context Values ──────────────────────────────────────────────
   const authValue = useMemo(
     () => ({ authState, login, logout }),
     [authState, login, logout]
   );
 
   const cartValue = useMemo(
-    () => ({ cartState, addToCart, removeFromCart, openCart, closeCart }),
-    [cartState, addToCart, removeFromCart, openCart, closeCart]
+    () => ({ cartState, addToCart, removeFromCart, updateQuantity, openCart, closeCart }),
+    [cartState, addToCart, removeFromCart, updateQuantity, openCart, closeCart]
   );
 
   return (

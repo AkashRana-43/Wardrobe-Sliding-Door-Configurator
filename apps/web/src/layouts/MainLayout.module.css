@@ -1,0 +1,101 @@
+/* ── Root ────────────────────────────────────────────────────────────── */
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* ── Navbar ──────────────────────────────────────────────────────────── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-navbar);
+  height: var(--size-navbar-height);
+  background: var(--color-navbar-bg);
+  box-shadow: var(--shadow-navbar);
+  transition: margin-right var(--transition-panel);
+}
+
+.navbarInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: var(--letter-spacing-tight);
+  text-decoration: none;
+  user-select: none;
+}
+
+.logoAccent {
+  color: var(--color-primary-base);
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ── Content area ────────────────────────────────────────────────────── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-right var(--transition-panel);
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────── */
+.footer {
+  height: var(--size-footer-height);
+  background: var(--color-bg-surface);
+  border-top: 1px solid var(--color-border-subtle);
+  transition: margin-right var(--transition-panel);
+}
+
+.footerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+.footerCopy {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ── Cart open — shift everything right ──────────────────────────────── */
+.root.cartOpen .navbar,
+.root.cartOpen .main,
+.root.cartOpen .footer {
+  margin-right: var(--size-cart-panel-width);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .navbarInner,
+  .footerInner {
+    padding: 0 var(--space-4);
+  }
+
+  .root.cartOpen .navbar,
+  .root.cartOpen .main,
+  .root.cartOpen .footer {
+    margin-right: 0;
+  }
+}

@@ -1,0 +1,53 @@
+.root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  transition: background var(--transition-fast);
+}
+
+.root:hover {
+  background: var(--color-bg-subtle);
+}
+
+.root:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.icon {
+  width: var(--size-icon-lg);
+  height: var(--size-icon-lg);
+  display: block;
+}
+
+.badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: var(--size-badge-diameter);
+  height: var(--size-badge-diameter);
+  border-radius: var(--radius-full);
+  background: var(--color-badge-bg);
+  color: var(--color-badge-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--size-badge-diameter);
+  text-align: center;
+  padding: 0 4px;
+  pointer-events: none;
+  /* pop in */
+  animation: badgePop 200ms var(--transition-easing-spring) both;
+}
+
+@keyframes badgePop {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}

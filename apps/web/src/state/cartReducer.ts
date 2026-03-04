@@ -3,6 +3,7 @@ import type { CartState, CartItem } from "@/state/cartTypes";
 export type CartAction =
   | { type: "ADD_ITEM"; payload: CartItem }
   | { type: "REMOVE_ITEM"; payload: string }
+  | { type: "UPDATE_QUANTITY"; payload: { id: string; quantity: number } }
   | { type: "OPEN_CART" }
   | { type: "CLOSE_CART" };
 
@@ -11,11 +12,10 @@ export const cartReducer = (
   action: CartAction
 ): CartState => {
   switch (action.type) {
-
     case "ADD_ITEM":
       return {
         ...state,
-        items: [...state.items, action.payload],
+        items: [...state.items, { ...action.payload, quantity: action.payload.quantity ?? 1 }],
       };
 
     case "REMOVE_ITEM":
@@ -23,6 +23,17 @@ export const cartReducer = (
         ...state,
         items: state.items.filter((item) => item.id !== action.payload),
       };
+
+    case "UPDATE_QUANTITY": {
+      const { id, quantity } = action.payload;
+      if (quantity < 1) return state;
+      return {
+        ...state,
+        items: state.items.map((item) =>
+          item.id === id ? { ...item, quantity } : item
+        ),
+      };
+    }
 
     case "OPEN_CART":
       return { ...state, isOpen: true };

@@ -1,0 +1,284 @@
+/*variables.module.css*/
+
+/* ─── :root token registration ─────────────────────────────────────── */
+:root {
+  /* ── Colour: Brand ───────────────────────────────────────────────── */
+  --color-primary-base: #fa553c;
+  --color-primary-hover: #ba3f2f;
+  --color-primary-active: #9a3325;
+  --color-primary-disabled: #f5a898;
+  --color-primary-text: #ffffff;
+
+  /* ── Colour: Neutrals ────────────────────────────────────────────── */
+  --color-text-primary: #262626;
+  --color-text-secondary: #595959;
+  --color-text-placeholder: #8c8c8c;
+  --color-text-disabled: #bfbfbf;
+  --color-text-inverse: #ffffff;
+
+  /* ── Colour: Backgrounds ─────────────────────────────────────────── */
+  --color-bg-app: #f5f5f5;
+  --color-bg-surface: #ffffff;
+  --color-bg-surface-raised: #ffffff;
+  --color-bg-subtle: #fafafa;
+  --color-bg-skeleton: #e8e8e8;
+  --color-bg-skeleton-shine: #f0f0f0;
+  --color-bg-overlay: rgba(38, 38, 38, 0.45);
+  --color-bg-cart-panel: #ffffff;
+
+  /* ── Colour: Borders ─────────────────────────────────────────────── */
+  --color-border-default: #d9d9d9;
+  --color-border-strong: #8c8c8c;
+  --color-border-subtle: #f0f0f0;
+  --color-border-focus: #fa553c;
+  --color-border-error: #d9363e;
+
+  /* ── Colour: Semantic ────────────────────────────────────────────── */
+  --color-success-base: #389e0d;
+  --color-success-bg: #f6ffed;
+  --color-warning-base: #d48806;
+  --color-warning-bg: #fffbe6;
+  --color-error-base: #d9363e;
+  --color-error-bg: #fff1f0;
+  --color-info-base: #096dd9;
+  --color-info-bg: #e6f7ff;
+
+  /* ── Colour: Accordion & Steps ───────────────────────────────────── */
+  --color-step-active-bg: #fff5f3;
+  --color-step-active-border: #fa553c;
+  --color-step-done-icon: #389e0d;
+  --color-step-idle-icon: #8c8c8c;
+
+  /* ── Colour: Swatch (rounded-square colour indicators) ───────────── */
+  --color-swatch-border: #d9d9d9;
+  --color-swatch-border-selected: #fa553c;
+  --color-swatch-shadow-selected: rgba(250, 85, 60, 0.35);
+
+  /* ── Colour: Navbar ──────────────────────────────────────────────── */
+  --color-navbar-bg: #ffffff;
+  --color-navbar-border: #f0f0f0;
+  --color-navbar-text: #262626;
+
+  /* ── Colour: Cart badge ──────────────────────────────────────────── */
+  --color-badge-bg: #fa553c;
+  --color-badge-text: #ffffff;
+
+  /* ── Spacing scale (4-pt base grid) ─────────────────────────────── */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ── Border radius ───────────────────────────────────────────────── */
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+  --radius-swatch: 6px;
+  --radius-button: 6px;
+  --radius-input: 6px;
+  --radius-card: 10px;
+  --radius-panel: 0px;
+  --radius-skeleton: 6px;
+
+  /* ── Typography ─────────────────────────────────────────────────── */
+
+  /* Font families */
+  --font-family-base: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-family-mono: "JetBrains Mono", "Fira Code", monospace;
+
+  /* Font sizes */
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 22px;
+  --font-size-3xl: 28px;
+  --font-size-4xl: 36px;
+
+  /* Font weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semi: 600;
+  --font-weight-bold: 700;
+
+  /* Line heights */
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+
+  /* Letter spacing */
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.04em;
+  --letter-spacing-wider: 0.08em;
+  --letter-spacing-caps: 0.1em;
+
+  /* ── Component-specific size tokens ─────────────────────────────── */
+
+  /* Navbar */
+  --size-navbar-height: 76px;
+
+  /* Footer */
+  --size-footer-height: 56px;
+
+  /* Layout split */
+  --size-preview-width: 70%;
+  --size-sidebar-width: 30%;
+  --size-sidebar-min-width: 320px;
+  --size-sidebar-max-width: 420px;
+
+  /* Cart panel */
+  --size-cart-panel-width: 380px;
+
+  /* Input */
+  --size-input-height-sm: 32px;
+  --size-input-height-md: 40px;
+  --size-input-height-lg: 48px;
+
+  /* Button */
+  --size-button-height-sm: 32px;
+  --size-button-height-md: 40px;
+  --size-button-height-lg: 48px;
+
+  /* Swatch */
+  --size-swatch-sm: 28px;
+  --size-swatch-md: 36px;
+  --size-swatch-lg: 48px;
+
+  /* Badge */
+  --size-badge-diameter: 18px;
+
+  /* Icon */
+  --size-icon-sm: 16px;
+  --size-icon-md: 20px;
+  --size-icon-lg: 24px;
+
+  /* ─────────────────────────────────────────────────────────────────── */
+  /* ── Shadows ────────────────────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.14);
+  --shadow-panel: 2px 0 16px rgba(0, 0, 0, 0.12);
+  --shadow-navbar: 0 1px 0 var(--color-navbar-border);
+  --shadow-swatch-selected:
+    0 0 0 2px var(--color-swatch-border-selected),
+    0 0 0 4px var(--color-swatch-shadow-selected);
+  --shadow-input-focus: 0 0 0 2px rgba(250, 85, 60, 0.2);
+  --shadow-button-primary: 0 2px 6px rgba(250, 85, 60, 0.3);
+
+  /* ─────────────────────────────────────────────────────────────────── */
+  /* ── Transitions ─────────────────────────────────────────────────── */
+  --transition-duration-fast: 120ms;
+  --transition-duration-base: 200ms;
+  --transition-duration-slow: 320ms;
+  --transition-duration-panel: 280ms;
+
+  --transition-easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-easing-in: cubic-bezier(0.4, 0, 1, 1);
+  --transition-easing-out: cubic-bezier(0, 0, 0.2, 1);
+  --transition-easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --transition-base: var(--transition-duration-base)
+    var(--transition-easing-default);
+  --transition-fast: var(--transition-duration-fast)
+    var(--transition-easing-default);
+  --transition-slow: var(--transition-duration-slow)
+    var(--transition-easing-default);
+  --transition-panel: var(--transition-duration-panel)
+    var(--transition-easing-out);
+
+  /* ── Z-index scale ───────────────────────────────────────────────── */
+  --z-below: -1;
+  --z-base: 0;
+  --z-raised: 10;
+  --z-sticky: 20;
+  --z-navbar: 30;
+  --z-cart-panel: 40;
+  --z-overlay: 50;
+  --z-modal: 60;
+  --z-toast: 70;
+  --z-tooltip: 80;
+
+  /* ── Skeleton animation ──────────────────────────────────────────── */
+  --skeleton-animation-duration: 1.4s;
+  --skeleton-animation-timing: ease-in-out;
+
+  /* ── Focus ring (accessibility) ─────────────────────────────────── */
+  --focus-ring-width: 3px;
+  --focus-ring-color: rgba(250, 85, 60, 0.5);
+  --focus-ring: 0 0 0 var(--focus-ring-width) var(--focus-ring-color);
+}
+
+/*
+ * Skeleton shimmer keyframe
+ * ─────────────────────────
+ * Declared here globally so any skeleton component can reference it with `animation-name: shimmer` without re-declaring the keyframe.
+ */
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+/*
+ * Cart panel slide-in keyframes
+ * ─────────────────────────────
+ * Used by CartPanel component. Declared globally.
+ */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

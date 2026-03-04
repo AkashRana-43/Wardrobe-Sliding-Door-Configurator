@@ -125,6 +125,7 @@ export interface CartItem {
   id: string;
   wardrobeSnapshot: WardrobeConfiguratorState;
   priceBreakdown: PriceBreakdown;
+  quantity: number;
   addedAt: number;
 }
 
