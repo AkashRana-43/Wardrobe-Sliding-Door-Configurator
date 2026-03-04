@@ -4,17 +4,16 @@ import type {
 } from "@/domain/models/slidingDoorConfig";
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
-
 export interface AuthState {
   isLoggedIn: boolean;
 }
 
 // ─── Cart ─────────────────────────────────────────────────────────────────────
-
 export interface CartItem {
   id: string;
   wardrobeSnapshot: WardrobeConfiguratorState;
   priceBreakdown: PriceBreakdown;
+  quantity: number;
   addedAt: number;
 }
 
@@ -24,7 +23,6 @@ export interface CartState {
 }
 
 // ─── Context Value Types ──────────────────────────────────────────────────────
-
 export interface AuthContextValue {
   authState: AuthState;
   login: () => void;
@@ -33,8 +31,9 @@ export interface AuthContextValue {
 
 export interface CartContextValue {
   cartState: CartState;
-  addToCart: (item: Omit<CartItem, "id" | "addedAt">) => void;
+  addToCart: (item: Omit<CartItem, "id" | "addedAt" | "quantity">) => void;
   removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   openCart: () => void;
   closeCart: () => void;
 }

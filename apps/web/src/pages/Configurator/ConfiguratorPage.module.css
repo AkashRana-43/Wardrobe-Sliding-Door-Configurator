@@ -1,0 +1,55 @@
+/* ── Page root ───────────────────────────────────────────────────────── */
+.page {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - var(--size-navbar-height) - var(--size-footer-height));
+  overflow: hidden;
+  background: var(--color-bg-app);
+}
+
+/* ── Accordion sidebar (left 40%) ────────────────────────────────────── */
+.sidebar {
+  width: 40%;
+  min-width: var(--size-sidebar-min-width);
+  max-width: var(--size-sidebar-max-width);
+  background: var(--color-bg-surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
+  border-right: 1px solid var(--color-border-subtle);
+}
+
+/* ── Live preview pane (right 60%) ───────────────────────────────────── */
+.preview {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--color-bg-app);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .page {
+    flex-direction: column;
+    height: auto;
+    overflow: auto;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: unset;
+    max-width: unset;
+    height: auto;
+    box-shadow: none;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .preview {
+    height: 50vh;
+    min-height: 280px;
+  }
+}

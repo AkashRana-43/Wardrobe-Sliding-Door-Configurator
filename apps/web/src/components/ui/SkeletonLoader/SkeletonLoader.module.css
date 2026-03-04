@@ -1,0 +1,138 @@
+/* ── Shimmer base ────────────────────────────────────────────────────── */
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-skeleton)       0%,
+    var(--color-bg-skeleton-shine) 50%,
+    var(--color-bg-skeleton)       100%
+  );
+  background-size: 800px 100%;
+  animation: shimmer var(--skeleton-animation-duration)
+    var(--skeleton-animation-timing) infinite;
+  border-radius: var(--radius-skeleton);
+}
+
+/* ── SkeletonBox — generic rectangular block ─────────────────────────── */
+.box {
+  composes: shimmer;
+  display: block;
+  width: 100%;
+}
+
+/* ── SkeletonText — mimics a line of text ────────────────────────────── */
+.text {
+  composes: shimmer;
+  display: block;
+  height: 14px;
+  border-radius: var(--radius-sm);
+}
+
+.text + .text {
+  margin-top: var(--space-2);
+}
+
+/* Last line is shorter — matches how real paragraph text looks */
+.textShort {
+  width: 60%;
+}
+
+/* ── SkeletonSwatch — rounded square colour swatch placeholder ───────── */
+.swatch {
+  composes: shimmer;
+  display: inline-block;
+  flex-shrink: 0;
+  border-radius: var(--radius-swatch);
+}
+
+/* ── SkeletonButton ──────────────────────────────────────────────────── */
+.buttonSkeleton {
+  composes: shimmer;
+  display: block;
+  height: var(--size-button-height-md);
+  border-radius: var(--radius-button);
+  width: 100%;
+}
+
+/* ── Pre-composed: AccordionStep skeleton ────────────────────────────── */
+.accordionStep {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.accordionStepHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.accordionStepIcon {
+  composes: shimmer;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.accordionStepTitle {
+  composes: shimmer;
+  height: 16px;
+  width: 140px;
+  border-radius: var(--radius-sm);
+}
+
+.accordionStepChevron {
+  composes: shimmer;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-sm);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ── Pre-composed: Preview skeleton ─────────────────────────────────── */
+.preview {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+}
+
+.previewCanvas {
+  composes: shimmer;
+  flex: 1;
+  border-radius: var(--radius-lg);
+  min-height: 300px;
+}
+
+.previewMeta {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.previewMetaItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.previewMetaLabel {
+  composes: shimmer;
+  height: 12px;
+  width: 60px;
+  border-radius: var(--radius-sm);
+}
+
+.previewMetaValue {
+  composes: shimmer;
+  height: 20px;
+  width: 90px;
+  border-radius: var(--radius-sm);
+}

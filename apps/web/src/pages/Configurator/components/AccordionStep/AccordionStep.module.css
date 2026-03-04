@@ -1,0 +1,134 @@
+/* ── Step container ──────────────────────────────────────────────────── */
+.step {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-surface);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.step.active {
+  border-color: var(--color-step-active-border);
+}
+
+.step.completed {
+  border-color: var(--color-border-subtle);
+}
+
+/* ── Header / trigger ────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.header:hover:not(:disabled) {
+  background: var(--color-bg-subtle);
+}
+
+.header:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.header:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.step.active .header {
+  background: var(--color-step-active-bg);
+}
+
+/* ── Step indicator (number / check icon) ────────────────────────────── */
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.indicatorIdle {
+  background: var(--color-bg-subtle);
+  border: 1.5px solid var(--color-border-default);
+  color: var(--color-text-secondary);
+}
+
+.indicatorActive {
+  background: var(--color-primary-base);
+  border: 1.5px solid var(--color-primary-base);
+  color: #ffffff;
+}
+
+.indicatorDone {
+  background: var(--color-success-bg);
+  border: 1.5px solid var(--color-step-done-icon);
+  color: var(--color-step-done-icon);
+}
+
+/* ── Title + summary ─────────────────────────────────────────────────── */
+.titleGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semi);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-snug);
+}
+
+.summary {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Chevron ─────────────────────────────────────────────────────────── */
+.chevron {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+  transition: transform var(--transition-fast);
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+/* ── Panel (collapsible content) ─────────────────────────────────────── */
+.panel {
+  overflow: hidden;
+  /* height animated via max-height trick for CSS-only collapse */
+  max-height: 0;
+  transition: max-height var(--transition-slow) cubic-bezier(0, 1, 0, 1);
+}
+
+.panelOpen {
+  max-height: 2000px;
+  transition: max-height var(--transition-slow) ease-in-out;
+}
+
+.panelInner {
+  padding: var(--space-4);
+  padding-top: 0;
+  border-top: 1px solid var(--color-border-subtle);
+}
