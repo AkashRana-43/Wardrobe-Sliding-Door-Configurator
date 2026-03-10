@@ -48,6 +48,34 @@
   gap: var(--space-2);
 }
 
+.navBtn {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background: none;
+  border: 1.5px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.navBtn:hover {
+  border-color: var(--color-primary-base);
+  color: var(--color-primary-base);
+}
+
+.navBtnActive {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-base);
+  background: var(--color-step-active-bg);
+  border: 1.5px solid var(--color-primary-base);
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+}
+
 /* ── Content area ────────────────────────────────────────────────────── */
 .main {
   flex: 1;

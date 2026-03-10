@@ -4,9 +4,7 @@ import type {
   WardrobeTypeId,
   WardrobeDimensions,
 } from "@/domain/models/slidingDoorConfig";
-import {
-  createInitialWardrobeState,
-} from "@/domain/models/slidingDoorConfig";
+import { createInitialWardrobeState } from "@/domain/models/slidingDoorConfig";
 
 // ─── Action Types ─────────────────────────────────────────────────────────────
 
@@ -15,6 +13,7 @@ export type WardrobeAction =
   | { type: "SET_DIMENSIONS"; payload: WardrobeDimensions }
   | { type: "SET_RANGE_AND_DOOR_COUNT"; payload: { rangeId: string; doorCount: number } }
   | { type: "SET_MELAMINE_COLOUR"; payload: string }
+  | { type: "CLEAR_MELAMINE_COLOUR" }
   | { type: "SET_DOOR_INSERT"; payload: { doorIndex: number; insertId: string | null } }
   | { type: "SET_STILES_AND_TRACKS"; payload: string }
   | { type: "SET_EXTRA_QUANTITY"; payload: { extraId: string; quantity: number } }
@@ -39,7 +38,6 @@ export const wardrobeReducer = (
   action: WardrobeAction
 ): WardrobeConfiguratorState => {
   switch (action.type) {
-
     case "SET_WARDROBE_TYPE":
       return { ...state, wardrobeTypeId: action.payload };
 
@@ -64,6 +62,9 @@ export const wardrobeReducer = (
 
     case "SET_MELAMINE_COLOUR":
       return { ...state, wardrobeDoorMelamineColourId: action.payload };
+
+    case "CLEAR_MELAMINE_COLOUR":
+      return { ...state, wardrobeDoorMelamineColourId: null };
 
     case "SET_DOOR_INSERT": {
       const { doorIndex, insertId } = action.payload;

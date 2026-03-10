@@ -10,7 +10,6 @@ export const CartAuthProvider = ({ children }: { children: ReactNode }) => {
     undefined,
     createInitialAuthState
   );
-
   const [cartState, cartDispatch] = useReducer(
     cartReducer,
     undefined,
@@ -18,15 +17,11 @@ export const CartAuthProvider = ({ children }: { children: ReactNode }) => {
   );
 
   // ─── Auth Actions ─────────────────────────────────────────────────────────
-  const login = useCallback(() => {
-    authDispatch({ type: "LOGIN" });
-  }, []);
-
-  const logout = useCallback(() => {
-    authDispatch({ type: "LOGOUT" });
-  }, []);
+  const login  = useCallback(() => authDispatch({ type: "LOGIN" }),  [authDispatch]);
+  const logout = useCallback(() => authDispatch({ type: "LOGOUT" }), [authDispatch]);
 
   // ─── Cart Actions ─────────────────────────────────────────────────────────
+  // cartDispatch is stable — safe to include in deps
   const addToCart = useCallback(
     (item: Omit<CartItem, "id" | "addedAt" | "quantity">) => {
       cartDispatch({
@@ -39,24 +34,22 @@ export const CartAuthProvider = ({ children }: { children: ReactNode }) => {
         },
       });
     },
-    []
+    [cartDispatch]  // was [] — stale closure bug fixed
   );
 
-  const removeFromCart = useCallback((id: string) => {
-    cartDispatch({ type: "REMOVE_ITEM", payload: id });
-  }, []);
+  const removeFromCart = useCallback(
+    (id: string) => cartDispatch({ type: "REMOVE_ITEM", payload: id }),
+    [cartDispatch]
+  );
 
-  const updateQuantity = useCallback((id: string, quantity: number) => {
-    cartDispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
-  }, []);
+  const updateQuantity = useCallback(
+    (id: string, quantity: number) =>
+      cartDispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } }),
+    [cartDispatch]
+  );
 
-  const openCart = useCallback(() => {
-    cartDispatch({ type: "OPEN_CART" });
-  }, []);
-
-  const closeCart = useCallback(() => {
-    cartDispatch({ type: "CLOSE_CART" });
-  }, []);
+  const openCart  = useCallback(() => cartDispatch({ type: "OPEN_CART" }),  [cartDispatch]);
+  const closeCart = useCallback(() => cartDispatch({ type: "CLOSE_CART" }), [cartDispatch]);
 
   // ─── Memoised Context Values ──────────────────────────────────────────────
   const authValue = useMemo(

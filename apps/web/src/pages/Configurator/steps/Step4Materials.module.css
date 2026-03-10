@@ -1,0 +1,236 @@
+/* ── Root ────────────────────────────────────────────────────────────── */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-4) 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semi);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.sectionSubtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.sectionSubtitleOptional {
+  color: var(--color-success-base);
+  font-weight: var(--font-weight-medium);
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border-subtle);
+  border: none;
+  margin: 0;
+}
+
+/* ── Colour swatch grid ──────────────────────────────────────────────── */
+.swatchGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.swatchButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+  position: relative;
+}
+
+.swatchButton:hover {
+  background: var(--color-bg-subtle);
+}
+
+.swatchButton:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.swatch {
+  width: var(--size-swatch-lg);
+  height: var(--size-swatch-lg);
+  border-radius: var(--radius-swatch);
+  border: 2px solid var(--color-swatch-border);
+  transition: border-color var(--transition-fast),
+              box-shadow var(--transition-fast),
+              transform var(--transition-fast);
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swatchButton:hover .swatch {
+  transform: scale(1.05);
+}
+
+.swatchActive {
+  border-color: var(--color-swatch-border-selected);
+  box-shadow: var(--shadow-swatch-selected);
+}
+
+.swatchImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: calc(var(--radius-swatch) - 2px);
+  display: block;
+}
+
+.swatchName {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-align: center;
+  max-width: 56px;
+  line-height: var(--line-height-snug);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.swatchNameActive {
+  color: var(--color-primary-base);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ── Per-door inserts ────────────────────────────────────────────────── */
+.doorBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.doorLabel {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semi);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-caps);
+  margin: 0;
+}
+
+.insertGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+.insertCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 2px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-surface);
+  cursor: pointer;
+  /* shadow so white cards are visible against white background */
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-fast),
+              box-shadow var(--transition-fast),
+              background var(--transition-fast);
+  text-align: center;
+}
+
+.insertCard:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.insertCard:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.insertCardActive {
+  border-color: var(--color-step-active-border);
+  background: var(--color-step-active-bg);
+  box-shadow: var(--shadow-swatch-selected);
+}
+
+.insertCardActive:hover {
+  border-color: var(--color-step-active-border);
+  box-shadow: var(--shadow-swatch-selected);
+}
+
+.insertImageWrap {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-skeleton);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06),
+              inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.insertImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.insertImageFallback {
+  color: var(--color-text-disabled);
+}
+
+.insertName {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+}
+
+.insertNameActive {
+  color: var(--color-primary-base);
+}
+
+/* ── Actions ─────────────────────────────────────────────────────────── */
+.actions {
+  padding-top: var(--space-2);
+}
+
+.error {
+  font-size: var(--font-size-sm);
+  color: var(--color-error-base);
+  padding: var(--space-3);
+  background: var(--color-error-bg);
+  border-radius: var(--radius-md);
+}
+
+.skeletonSwatches {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.skeletonInsertGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}

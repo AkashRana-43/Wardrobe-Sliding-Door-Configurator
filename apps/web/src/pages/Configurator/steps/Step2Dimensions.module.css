@@ -1,0 +1,30 @@
+/* ── Form ────────────────────────────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-4) 0;
+}
+
+/* ── Field row ───────────────────────────────────────────────────────── */
+.fieldRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── Constraint hint ─────────────────────────────────────────────────── */
+.hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+  padding: var(--space-3);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-primary-base);
+}
+
+/* ── Continue button row ─────────────────────────────────────────────── */
+.actions {
+  padding-top: var(--space-2);
+}

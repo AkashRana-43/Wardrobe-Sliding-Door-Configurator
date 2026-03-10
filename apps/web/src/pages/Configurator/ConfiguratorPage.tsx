@@ -1,6 +1,6 @@
 import React, { lazy, useCallback, useMemo, useState } from 'react';
 import ConfiguratorAccordion from '@/pages/Configurator/components/ConfiguratorAccordion/ConfiguratorAccordion';
-import { SkeletonPreview } from '@/components/ui/SkeletonLoader';
+import WardrobePreview from '@/pages/Configurator/components/WardrobePreview/WardrobePreview';
 import { useWardrobeState } from '@/state/useWardrobeContext';
 import { useCart } from '@/state/useCartAuth';
 import styles from './ConfiguratorPage.module.css';
@@ -20,7 +20,7 @@ function ConfiguratorPage() {
   const { state: wardrobeState } = useWardrobeState();
   const { openCart } = useCart();
 
-  const [activeStep, setActiveStep] = useState<number>(1);
+  const [activeStep, setActiveStep]       = useState<number>(1);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
   // ── Step navigation ────────────────────────────────────────────────
@@ -40,11 +40,12 @@ function ConfiguratorPage() {
     }
   }, []);
 
-  // ── Checkout / Quote ───────────────────────────────────────────────
-
-  const handleCheckout = useCallback(() => {
-    alert('Proceeding to checkout…');
-  }, []);
+  // ── Reset accordion state after add to cart ────────────────────────
+  const handleAddToCart = useCallback(() => {
+    setActiveStep(1);
+    setCompletedSteps(new Set());
+    openCart();
+  }, [openCart]);
 
   const handleQuote = useCallback(() => {
     alert('Requesting a quote…');
@@ -61,12 +62,12 @@ function ConfiguratorPage() {
       5: <Step5StilesExtras onComplete={() => handleStepComplete(5)} />,
       6: (
         <Step6Summary
-          onAddToCart={() => { openCart(); }}
+          onAddToCart={handleAddToCart}
           onQuote={handleQuote}
         />
       ),
     }),
-    [handleStepComplete, handleQuote, openCart]
+    [handleStepComplete, handleAddToCart, handleQuote]
   );
 
   // ── Step summaries ─────────────────────────────────────────────────
@@ -97,23 +98,20 @@ function ConfiguratorPage() {
 
   return (
     <div className={styles.page}>
-      {/* ── Accordion sidebar (left 40%) ───────────────────────────── */}
       <aside className={styles.sidebar}>
         <ConfiguratorAccordion
           activeStep={activeStep}
           completedSteps={completedSteps}
           totalPrice={0}
           onStepToggle={handleStepToggle}
-          onCheckout={handleCheckout}
+          onCheckout={() => alert('Proceeding to checkout…')}
           onQuote={handleQuote}
           stepContent={stepContent}
           stepSummaries={stepSummaries}
         />
       </aside>
-
-      {/* ── Live preview (right 60%) ───────────────────────────────── */}
       <div className={styles.preview}>
-        <SkeletonPreview />
+        <WardrobePreview />
       </div>
     </div>
   );

@@ -50,12 +50,12 @@ export const wardrobeWidthRanges: WardrobeWidthRange[] = [
 ];
 
 export const wardrobeDoorMelamineColours: WardrobeDoorMelamineColour[] = [
-  { id: "white-ash",   name: "White Ash",   image: "/images/melamine-colours/white-ash.jpg",   hexPreview: "#E8DDD0" },
-  { id: "vanilla",     name: "Vanilla",     image: "/images/melamine-colours/vanilla.jpg",     hexPreview: "#F3EDD8" },
+  { id: "white-ash",   name: "White Ash",   image: "/images/melamine-colours/white-ash.jpg",   hexPreview: "#ebebeb" },
+  { id: "vanilla",     name: "Vanilla",     image: "/images/melamine-colours/vanilla.jpg",     hexPreview: "#f5eeda" },
   { id: "lemon-tree",  name: "Lemon Tree",  image: "/images/melamine-colours/lemon-tree.jpg",  hexPreview: "#D4B483" },
-  { id: "ivory",       name: "Ivory",       image: "/images/melamine-colours/ivory.jpg",       hexPreview: "#FFFFF0" },
+  { id: "ivory",       name: "Ivory",       image: "/images/melamine-colours/ivory.jpg",       hexPreview: "#f7f7f2" },
   { id: "devine-oak",  name: "Devine Oak",  image: "/images/melamine-colours/devine-oak.jpg",  hexPreview: "#B8904A" },
-  { id: "cloud-grey",  name: "Cloud Grey",  image: "/images/melamine-colours/cloud-grey.jpg",  hexPreview: "#D6D6D6" },
+  { id: "cloud-grey",  name: "Cloud Grey",  image: "/images/melamine-colours/cloud-grey.jpg",  hexPreview: "#f2f2f2" },
   { id: "polar-white", name: "Polar White", image: "/images/melamine-colours/polar-white.jpg", hexPreview: "#FAFAFA" },
 ];
 
