@@ -35,36 +35,23 @@ function getStatus(error: string | null, value: string): InputStatus {
   return 'success';
 }
 
-// ─── Step2Dimensions ──────────────────────────────────────────────────────────
+// ─── Inner form (keyed — remounts on reset to clear local state) ──────────────
 
-interface Props {
+interface FormProps {
+  initialWidth: string;
+  initialHeight: string;
   onComplete: () => void;
 }
 
-export default function Step2Dimensions({ onComplete }: Props) {
-  const { state, dispatch } = useWardrobeState();
+function DimensionsForm({ initialWidth, initialHeight, onComplete }: FormProps) {
+  const { dispatch } = useWardrobeState();
 
-  // ── Local input state (string to allow empty/partial input) ────────
-  const [widthRaw, setWidthRaw]   = useState<string>(
-    state.wardrobeDimensions?.widthMm.toString() ?? ''
-  );
-  const [heightRaw, setHeightRaw] = useState<string>(
-    state.wardrobeDimensions?.heightMm.toString() ?? ''
-  );
+  const [widthRaw,  setWidthRaw]  = useState<string>(initialWidth);
+  const [heightRaw, setHeightRaw] = useState<string>(initialHeight);
 
-  // ── Sync local state when reducer resets (wardrobeDimensions → null) ─
-  useEffect(() => {
-    if (state.wardrobeDimensions === null) {
-      setWidthRaw('');
-      setHeightRaw('');
-    }
-  }, [state.wardrobeDimensions]);
-
-  // ── Debounced values — only dispatch after user stops typing ───────
   const debouncedWidth  = useDebounce(widthRaw,  400);
   const debouncedHeight = useDebounce(heightRaw, 400);
 
-  // ── Derived validation ─────────────────────────────────────────────
   const widthNum  = parseFloat(debouncedWidth);
   const heightNum = parseFloat(debouncedHeight);
 
@@ -77,7 +64,6 @@ export default function Step2Dimensions({ onComplete }: Props) {
     widthError === null &&
     heightError === null;
 
-  // ── Dispatch to context when debounced values are valid ────────────
   useEffect(() => {
     if (isValid) {
       dispatch({
@@ -87,7 +73,6 @@ export default function Step2Dimensions({ onComplete }: Props) {
     }
   }, [debouncedWidth, debouncedHeight, isValid, widthNum, heightNum, dispatch]);
 
-  // ── Handlers ───────────────────────────────────────────────────────
   const handleWidthChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => setWidthRaw(e.target.value),
     []
@@ -155,5 +140,33 @@ export default function Step2Dimensions({ onComplete }: Props) {
         </Button>
       </div>
     </div>
+  );
+}
+
+// ─── Step2Dimensions ──────────────────────────────────────────────────────────
+// Uses `key` on DimensionsForm so React fully remounts it when dimensions
+// are reset to null — cleanly clearing local state without setState-in-effect.
+
+interface Props {
+  onComplete: () => void;
+}
+
+export default function Step2Dimensions({ onComplete }: Props) {
+  const { state } = useWardrobeState();
+
+  const initialWidth  = state.wardrobeDimensions?.widthMm.toString()  ?? '';
+  const initialHeight = state.wardrobeDimensions?.heightMm.toString() ?? '';
+
+  // Key changes null → 'filled' on first entry, 'filled' → 'empty' on reset.
+  // DimensionsForm remounts automatically — no setState-in-effect needed.
+  const formKey = state.wardrobeDimensions === null ? 'empty' : 'filled';
+
+  return (
+    <DimensionsForm
+      key={formKey}
+      initialWidth={initialWidth}
+      initialHeight={initialHeight}
+      onComplete={onComplete}
+    />
   );
 }

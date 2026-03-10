@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useWardrobeState } from '@/state/useWardrobeContext';
 import { slidingDoorService } from '@/services/slidingDoorService';
 import type {
