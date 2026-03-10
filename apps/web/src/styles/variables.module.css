@@ -110,6 +110,15 @@
   --font-size-2xl: 22px;
   --font-size-3xl: 28px;
   --font-size-4xl: 36px;
+  
+  /* --font-size-xs: 13px;
+  --font-size-sm: 15px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 21px;
+  --font-size-2xl: 25px;
+  --font-size-3xl: 32px;
+  --font-size-4xl: 41px; */
 
   /* Font weights */
   --font-weight-regular: 400;

@@ -1,0 +1,55 @@
+/* ── Root ────────────────────────────────────────────────────────────── */
+.root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-app);
+  padding: var(--space-8);
+  gap: var(--space-4);
+}
+
+/* ── SVG wrapper ─────────────────────────────────────────────────────── */
+.svgWrap {
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(var(--shadow-lg));
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ── Empty placeholder ───────────────────────────────────────────────── */
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  color: var(--color-text-disabled);
+  text-align: center;
+}
+
+.placeholderText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-disabled);
+  margin: 0;
+}
+
+/* ── Dimension label ─────────────────────────────────────────────────── */
+.dimensionLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  text-align: center;
+}

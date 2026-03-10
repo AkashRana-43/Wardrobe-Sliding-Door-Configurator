@@ -1,0 +1,257 @@
+/* ── Root ────────────────────────────────────────────────────────────── */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-4) 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semi);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.sectionSubtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border-subtle);
+  border: none;
+  margin: 0;
+}
+
+/* ── Stiles & Tracks grid ────────────────────────────────────────────── */
+.stilesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.stilesButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.stilesButton:hover {
+  background: var(--color-bg-subtle);
+}
+
+.stilesButton:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.stilesSwatch {
+  width: var(--size-swatch-lg);
+  height: var(--size-swatch-lg);
+  border-radius: var(--radius-swatch);
+  border: 2px solid var(--color-swatch-border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--transition-fast),
+              box-shadow var(--transition-fast),
+              transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.stilesButton:hover .stilesSwatch {
+  transform: scale(1.05);
+}
+
+.stilesSwatchActive {
+  border-color: var(--color-swatch-border-selected);
+  box-shadow: var(--shadow-swatch-selected);
+}
+
+.stilesSwatchImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: calc(var(--radius-swatch) - 2px);
+}
+
+.stilesName {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-align: center;
+  max-width: 56px;
+  line-height: var(--line-height-snug);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stilesNameActive {
+  color: var(--color-primary-base);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ── Extras list ─────────────────────────────────────────────────────── */
+.extrasList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.extraRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1.5px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.extraRowDefault {
+  border-color: var(--color-border-subtle);
+  background: var(--color-bg-subtle);
+}
+
+.extraThumb {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-skeleton);
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-disabled);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+}
+
+.extraThumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.extraInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.extraName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.extraBadge {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-full);
+  padding: 1px 6px;
+  display: inline-block;
+  width: fit-content;
+}
+
+/* ── Quantity stepper ────────────────────────────────────────────────── */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.stepperBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-border-default);
+  background: var(--color-bg-surface);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  line-height: 1;
+  transition: border-color var(--transition-fast),
+              background var(--transition-fast),
+              color var(--transition-fast);
+}
+
+.stepperBtn:hover:not(:disabled) {
+  border-color: var(--color-primary-base);
+  color: var(--color-primary-base);
+  background: var(--color-step-active-bg);
+}
+
+.stepperBtn:disabled {
+  color: var(--color-text-disabled);
+  border-color: var(--color-border-subtle);
+  cursor: not-allowed;
+}
+
+.stepperBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.stepperValue {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semi);
+  color: var(--color-text-primary);
+  min-width: 16px;
+  text-align: center;
+}
+
+/* ── Actions ─────────────────────────────────────────────────────────── */
+.actions {
+  padding-top: var(--space-2);
+}
+
+.error {
+  font-size: var(--font-size-sm);
+  color: var(--color-error-base);
+  padding: var(--space-3);
+  background: var(--color-error-bg);
+  border-radius: var(--radius-md);
+}
+
+/* ── Skeleton ────────────────────────────────────────────────────────── */
+.skeletonSwatches {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.skeletonExtras {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}

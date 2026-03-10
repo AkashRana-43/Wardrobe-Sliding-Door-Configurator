@@ -11,7 +11,7 @@
 .sidebar {
   width: 40%;
   min-width: var(--size-sidebar-min-width);
-  max-width: var(--size-sidebar-max-width);
+  max-width: 520px;
   background: var(--color-bg-surface);
   display: flex;
   flex-direction: column;

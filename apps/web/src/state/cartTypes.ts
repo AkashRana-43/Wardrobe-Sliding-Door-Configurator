@@ -4,17 +4,20 @@ import type {
 } from "@/domain/models/slidingDoorConfig";
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
+
 export interface AuthState {
   isLoggedIn: boolean;
 }
 
 // ─── Cart ─────────────────────────────────────────────────────────────────────
+
 export interface CartItem {
   id: string;
   wardrobeSnapshot: WardrobeConfiguratorState;
   priceBreakdown: PriceBreakdown;
   quantity: number;
   addedAt: number;
+  reference?: string;
 }
 
 export interface CartState {
@@ -23,6 +26,7 @@ export interface CartState {
 }
 
 // ─── Context Value Types ──────────────────────────────────────────────────────
+
 export interface AuthContextValue {
   authState: AuthState;
   login: () => void;
