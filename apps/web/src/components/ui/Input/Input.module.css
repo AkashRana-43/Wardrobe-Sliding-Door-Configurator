@@ -50,6 +50,22 @@
   color: var(--color-text-placeholder);
 }
 
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-bg-surface) inset;
+  -webkit-text-fill-color: var(--color-text-primary);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-bg-surface) inset;
+  -webkit-text-fill-color: var(--color-text-primary);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 .input:hover:not(:disabled) {
   border-color: var(--color-border-strong);
 }

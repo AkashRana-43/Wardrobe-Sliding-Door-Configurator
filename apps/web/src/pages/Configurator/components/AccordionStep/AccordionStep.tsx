@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import styles from './AccordionStep.module.css';
 
 export type StepStatus = 'idle' | 'active' | 'completed';
@@ -14,9 +14,6 @@ export interface AccordionStepProps {
   children: React.ReactNode;
 }
 
-/**
- * AccordionStep
- */
 const AccordionStep = React.memo(function AccordionStep({
   stepNumber,
   title,
@@ -27,8 +24,25 @@ const AccordionStep = React.memo(function AccordionStep({
   onToggle,
   children,
 }: AccordionStepProps) {
-  const panelId = `step-panel-${stepNumber}`;
-  const headerId = `step-header-${stepNumber}`;
+  const headerRef = useRef<HTMLButtonElement>(null);
+  const panelId   = `step-panel-${stepNumber}`;
+  const headerId  = `step-header-${stepNumber}`;
+
+  // When this step opens, scroll so the header sits at ~20% from the top
+  useEffect(() => {
+    if (!isOpen || !headerRef.current) return;
+
+    const header = headerRef.current;
+
+    // Small delay lets the panel start opening before we scroll
+    const timer = setTimeout(() => {
+      const rect        = header.getBoundingClientRect();
+      const targetY     = window.scrollY + rect.top - window.innerHeight * 0.20;
+      window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [isOpen]);
 
   const handleToggle = () => {
     if (!disabled) onToggle(stepNumber);
@@ -38,21 +52,21 @@ const AccordionStep = React.memo(function AccordionStep({
     status === 'active'
       ? styles.indicatorActive
       : status === 'completed'
-      ? styles.indicatorDone
-      : styles.indicatorIdle;
+        ? styles.indicatorDone
+        : styles.indicatorIdle;
 
   const stepClass = [
     styles.step,
-    status === 'active' ? styles.active : '',
+    status === 'active'    ? styles.active    : '',
     status === 'completed' ? styles.completed : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
+  ].filter(Boolean).join(' ');
 
   return (
     <div className={stepClass}>
+
       {/* ── Header ───────────────────────────────────────────────────── */}
       <button
+        ref={headerRef}
         id={headerId}
         type="button"
         className={styles.header}
@@ -116,6 +130,7 @@ const AccordionStep = React.memo(function AccordionStep({
           {children}
         </div>
       </div>
+
     </div>
   );
 });

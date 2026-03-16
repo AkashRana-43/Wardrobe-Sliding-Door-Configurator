@@ -9,6 +9,8 @@ import type {
 } from '@/domain/models/slidingDoorConfig';
 import styles from './Step5StilesExtras.module.css';
 
+const TRACK_IDS = ['extra-top-track', 'extra-bottom-track'];
+
 // ─── StilesCard ───────────────────────────────────────────────────────────────
 
 interface StilesCardProps {
@@ -19,7 +21,6 @@ interface StilesCardProps {
 
 const StilesCard = React.memo(function StilesCard({ stiles, isSelected, onSelect }: StilesCardProps) {
   const [imgError, setImgError] = useState(false);
-
   return (
     <button
       type="button"
@@ -30,10 +31,10 @@ const StilesCard = React.memo(function StilesCard({ stiles, isSelected, onSelect
       title={stiles.name}
     >
       <span
-        className={isSelected ? `${styles.stilesSwatch} ${styles.stilesSwatchActive}` : styles.stilesSwatch}
+        className={[styles.stilesSwatch, isSelected ? styles.stilesSwatchActive : ''].filter(Boolean).join(' ')}
         style={imgError ? { backgroundColor: stiles.colour } : undefined}
       >
-        {!imgError && (
+        {!imgError ? (
           <img
             src={stiles.image}
             alt={stiles.colour}
@@ -41,12 +42,43 @@ const StilesCard = React.memo(function StilesCard({ stiles, isSelected, onSelect
             onError={() => setImgError(true)}
             loading="lazy"
           />
-        )}
+        ) : null}
       </span>
-      <span className={isSelected ? `${styles.stilesName} ${styles.stilesNameActive}` : styles.stilesName}>
+      <span className={[styles.stilesName, isSelected ? styles.stilesNameActive : ''].filter(Boolean).join(' ')}>
         {stiles.name}
       </span>
     </button>
+  );
+});
+
+// ─── TrackDisplayRow ──────────────────────────────────────────────────────────
+// Tracks are always qty=1, included, no controls — purely informational.
+
+interface TrackDisplayRowProps {
+  extra: WardrobeExtra;
+}
+
+const TrackDisplayRow = React.memo(function TrackDisplayRow({ extra }: TrackDisplayRowProps) {
+  const [imgError, setImgError] = useState(false);
+  return (
+    <div className={`${styles.extraRow} ${styles.extraRowDisabled}`}>
+      <div className={styles.extraThumb}>
+        {extra.image && !imgError ? (
+          <img src={extra.image} alt={extra.name} className={styles.extraThumbImg}
+            onError={() => setImgError(true)} loading="lazy" />
+        ) : (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="1.25" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+          </svg>
+        )}
+      </div>
+      <div className={styles.extraInfo}>
+        <span className={styles.extraName}>{extra.name}</span>
+        <span className={styles.extraBadge}>Included</span>
+      </div>
+      <span className={styles.trackQtyLabel}>× 1</span>
+    </div>
   );
 });
 
@@ -55,41 +87,26 @@ const StilesCard = React.memo(function StilesCard({ stiles, isSelected, onSelect
 interface ExtraRowProps {
   extra: WardrobeExtra;
   quantity: number;
-  imageKey: string | null;
-  isDefault: boolean;
   onQuantityChange: (id: string, quantity: number) => void;
 }
 
-const ExtraRow = React.memo(function ExtraRow({
-  extra,
-  quantity,
-  imageKey,
-  isDefault,
-  onQuantityChange,
-}: ExtraRowProps) {
+const ExtraRow = React.memo(function ExtraRow({ extra, quantity, onQuantityChange }: ExtraRowProps) {
   const [imgError, setImgError] = useState(false);
-  const imageSrc = imageKey ? extra.images[imageKey] : null;
 
   const handleDecrement = useCallback(() => {
-    if (!isDefault && quantity > 0) onQuantityChange(extra.id, quantity - 1);
-  }, [extra.id, quantity, isDefault, onQuantityChange]);
+    if (quantity > 0) onQuantityChange(extra.id, quantity - 1);
+  }, [extra.id, quantity, onQuantityChange]);
 
   const handleIncrement = useCallback(() => {
     if (quantity < extra.maxQuantity) onQuantityChange(extra.id, quantity + 1);
   }, [extra.id, quantity, extra.maxQuantity, onQuantityChange]);
 
   return (
-    <div className={isDefault ? `${styles.extraRow} ${styles.extraRowDefault}` : styles.extraRow}>
-      {/* Thumbnail */}
+    <div className={styles.extraRow}>
       <div className={styles.extraThumb}>
-        {imageSrc && !imgError ? (
-          <img
-            src={imageSrc}
-            alt={extra.name}
-            className={styles.extraThumbImg}
-            onError={() => setImgError(true)}
-            loading="lazy"
-          />
+        {extra.image && !imgError ? (
+          <img src={extra.image} alt={extra.name} className={styles.extraThumbImg}
+            onError={() => setImgError(true)} loading="lazy" />
         ) : (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" strokeWidth="1.25" aria-hidden="true">
@@ -97,38 +114,17 @@ const ExtraRow = React.memo(function ExtraRow({
           </svg>
         )}
       </div>
-
-      {/* Name + badge */}
       <div className={styles.extraInfo}>
         <span className={styles.extraName}>{extra.name}</span>
-        {isDefault && (
-          <span className={styles.extraBadge}>Included</span>
-        )}
       </div>
-
-      {/* Stepper */}
       <div className={styles.stepper}>
-        <button
-          type="button"
-          className={styles.stepperBtn}
-          onClick={handleDecrement}
-          disabled={isDefault || quantity <= 0}
-          aria-label={`Decrease ${extra.name} quantity`}
-        >
-          −
-        </button>
-        <span className={styles.stepperValue} aria-live="polite">
-          {quantity}
-        </span>
-        <button
-          type="button"
-          className={styles.stepperBtn}
-          onClick={handleIncrement}
-          disabled={quantity >= extra.maxQuantity}
-          aria-label={`Increase ${extra.name} quantity`}
-        >
-          +
-        </button>
+        <button type="button" className={styles.stepperBtn}
+          onClick={handleDecrement} disabled={quantity <= 0}
+          aria-label={`Decrease ${extra.name} quantity`}>−</button>
+        <span className={styles.stepperValue} aria-live="polite">{quantity}</span>
+        <button type="button" className={styles.stepperBtn}
+          onClick={handleIncrement} disabled={quantity >= extra.maxQuantity}
+          aria-label={`Increase ${extra.name} quantity`}>+</button>
       </div>
     </div>
   );
@@ -148,7 +144,7 @@ function Step5Skeleton() {
       <div className={styles.section}>
         <SkeletonBox width={80} height={16} borderRadius="var(--radius-sm)" />
         <div className={styles.skeletonExtras}>
-          {Array.from({ length: 4 }, (_, i) => (
+          {Array.from({ length: 6 }, (_, i) => (
             <SkeletonBox key={i} width="100%" height={68} borderRadius="var(--radius-card)" />
           ))}
         </div>
@@ -171,7 +167,6 @@ export default function Step5StilesExtras({ onComplete }: Props) {
   const [isLoading, setIsLoading]         = useState(true);
   const [error, setError]                 = useState<string | null>(null);
 
-  // ── Fetch stiles + extras in parallel ─────────────────────────────
   useEffect(() => {
     let cancelled = false;
     Promise.all([
@@ -194,19 +189,19 @@ export default function Step5StilesExtras({ onComplete }: Props) {
     return () => { cancelled = true; };
   }, []);
 
-  // ── Pre-select default extras on first load ────────────────────────
+  // Apply defaults whenever extras are loaded OR typeId changes (handles lazy mount timing)
   useEffect(() => {
     if (extrasOptions.length === 0) return;
-    extrasOptions
-      .filter((e) => e.isDefault)
-      .forEach((e) => {
-        if (!state.wardrobeSelectedExtras[e.id]) {
-          dispatch({ type: 'SET_EXTRA_QUANTITY', payload: { extraId: e.id, quantity: 1 } });
-        }
-      });
-  }, [extrasOptions]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!state.wardrobeTypeId) return;
+    const typeId = state.wardrobeTypeId;
+    extrasOptions.forEach((extra) => {
+      if (!extra.defaultQuantity) return;
+      if (!(typeId in extra.defaultQuantity)) return;
+      const qty = extra.defaultQuantity[typeId] ?? 0;
+      dispatch({ type: 'SET_EXTRA_QUANTITY', payload: { extraId: extra.id, quantity: qty } });
+    });
+  }, [extrasOptions, state.wardrobeTypeId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Handlers ───────────────────────────────────────────────────────
   const handleStilesSelect = useCallback(
     (id: string) => dispatch({ type: 'SET_STILES_AND_TRACKS', payload: id }),
     [dispatch]
@@ -218,9 +213,14 @@ export default function Step5StilesExtras({ onComplete }: Props) {
     [dispatch]
   );
 
+  const canContinue = !!state.wardrobeStilesAndTracksId;
+
   const handleContinue = useCallback(() => {
-    if (state.wardrobeStilesAndTracksId) onComplete();
-  }, [state.wardrobeStilesAndTracksId, onComplete]);
+    if (canContinue) onComplete();
+  }, [canContinue, onComplete]);
+
+  const trackExtras    = extrasOptions.filter((e) => TRACK_IDS.includes(e.id));
+  const optionalExtras = extrasOptions.filter((e) => !TRACK_IDS.includes(e.id));
 
   if (isLoading) return <Step5Skeleton />;
   if (error)     return <p className={styles.error}>{error}</p>;
@@ -229,49 +229,50 @@ export default function Step5StilesExtras({ onComplete }: Props) {
     <div className={styles.root}>
 
       {/* ── Section 1: Stiles & Tracks ──────────────────────────────── */}
-      <div className={styles.section}>
-        <p className={styles.sectionTitle}>Stiles & Tracks</p>
-        <p className={styles.sectionSubtitle}>Choose your frame finish</p>
-        <div className={styles.stilesGrid} role="radiogroup" aria-label="Select stiles and tracks">
-          {stilesOptions.map((stiles) => (
-            <StilesCard
-              key={stiles.id}
-              stiles={stiles}
-              isSelected={state.wardrobeStilesAndTracksId === stiles.id}
-              onSelect={handleStilesSelect}
-            />
-          ))}
+      <div className={styles.stilesSection}>
+        <div className={styles.stilesLeft}>
+          <p className={styles.sectionTitle}>Stiles & Tracks</p>
+          <p className={styles.sectionSubtitle}>Choose your frame finish.</p>
+          <div className={styles.stilesGrid} role="radiogroup" aria-label="Select stiles and tracks">
+            {stilesOptions.map((stiles) => (
+              <StilesCard
+                key={stiles.id}
+                stiles={stiles}
+                isSelected={state.wardrobeStilesAndTracksId === stiles.id}
+                onSelect={handleStilesSelect}
+              />
+            ))}
+          </div>
+
+          {/* Track included note + track display rows */}
+          <p className={styles.trackIncludedNote}>
+            🛤 Top and bottom tracks are included with your order.
+          </p>
+          <div className={styles.trackDisplayList}>
+            {trackExtras.map((extra) => (
+              <TrackDisplayRow key={extra.id} extra={extra} />
+            ))}
+          </div>
         </div>
       </div>
 
       <hr className={styles.divider} />
 
-      {/* ── Section 2: Extras ───────────────────────────────────────── */}
+      {/* ── Section 2: Optional extras ──────────────────────────────── */}
       <div className={styles.section}>
         <p className={styles.sectionTitle}>Extras</p>
         <p className={styles.sectionSubtitle}>
-          Top and bottom tracks are included. Add optional extras below.
+          Quantities are pre-filled based on your wardrobe type. Adjust as needed.
         </p>
         <div className={styles.extrasList}>
-          {extrasOptions.map((extra) => {
-            // Derive image key — End Panel uses melamine colour, rest use stiles id
-            const imageKey = extra.id === 'extra-end-panel'
-              ? state.wardrobeDoorMelamineColourId
-              : state.wardrobeStilesAndTracksId;
-
-            const quantity = state.wardrobeSelectedExtras[extra.id] ?? 0;
-
-            return (
-              <ExtraRow
-                key={extra.id}
-                extra={extra}
-                quantity={quantity}
-                imageKey={imageKey}
-                isDefault={extra.isDefault}
-                onQuantityChange={handleQuantityChange}
-              />
-            );
-          })}
+          {optionalExtras.map((extra) => (
+            <ExtraRow
+              key={extra.id}
+              extra={extra}
+              quantity={state.wardrobeSelectedExtras[extra.id] ?? 0}
+              onQuantityChange={handleQuantityChange}
+            />
+          ))}
         </div>
       </div>
 
@@ -281,12 +282,13 @@ export default function Step5StilesExtras({ onComplete }: Props) {
           variant="primary"
           size="md"
           fullWidth
-          disabled={!state.wardrobeStilesAndTracksId}
+          disabled={!canContinue}
           onClick={handleContinue}
         >
           Continue
         </Button>
       </div>
+
     </div>
   );
 }

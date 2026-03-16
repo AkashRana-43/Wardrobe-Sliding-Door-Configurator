@@ -2,14 +2,21 @@
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-5);
   padding: var(--space-4) 0;
 }
 
+/* ── Section ─────────────────────────────────────────────────────────── */
 .section {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
 .sectionTitle {
@@ -25,11 +32,7 @@
   margin: 0;
 }
 
-.sectionSubtitleOptional {
-  color: var(--color-success-base);
-  font-weight: var(--font-weight-medium);
-}
-
+/* ── Divider ─────────────────────────────────────────────────────────── */
 .divider {
   height: 1px;
   background: var(--color-border-subtle);
@@ -37,8 +40,8 @@
   margin: 0;
 }
 
-/* ── Colour swatch grid ──────────────────────────────────────────────── */
-.swatchGrid {
+/* ── Melamine colour swatches ────────────────────────────────────────── */
+.swatchRow {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
@@ -52,10 +55,9 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--space-1);
+  padding: 2px;
   border-radius: var(--radius-md);
   transition: background var(--transition-fast);
-  position: relative;
 }
 
 .swatchButton:hover {
@@ -64,22 +66,36 @@
 
 .swatchButton:focus-visible {
   outline: none;
+}
+
+.swatchButton:focus-visible .swatch {
   box-shadow: var(--focus-ring);
 }
 
+.swatchButtonActive .swatch {
+  border-color: var(--color-swatch-border-selected);
+  box-shadow: var(--shadow-swatch-selected);
+}
+
+.swatchButtonDisabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .swatch {
-  width: var(--size-swatch-lg);
-  height: var(--size-swatch-lg);
+  width: 192px;
+  height: 192px;
   border-radius: var(--radius-swatch);
   border: 2px solid var(--color-swatch-border);
-  transition: border-color var(--transition-fast),
-              box-shadow var(--transition-fast),
-              transform var(--transition-fast);
-  flex-shrink: 0;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: border-color var(--transition-fast),
+              box-shadow var(--transition-fast),
+              transform var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .swatchButton:hover .swatch {
@@ -95,7 +111,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: calc(var(--radius-swatch) - 2px);
+  display: block;
+}
+
+.swatchHex {
+  width: 100%;
+  height: 100%;
   display: block;
 }
 
@@ -103,11 +124,11 @@
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   text-align: center;
-  max-width: 56px;
-  line-height: var(--line-height-snug);
+  max-width: 192px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: var(--line-height-snug);
 }
 
 .swatchNameActive {
@@ -115,68 +136,159 @@
   font-weight: var(--font-weight-medium);
 }
 
-/* ── Per-door inserts ────────────────────────────────────────────────── */
+/* ── Door block ──────────────────────────────────────────────────────── */
 .doorBlock {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
-.doorLabel {
+.doorBlock:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* ── Door indicator ──────────────────────────────────────────────────── */
+.doorIndicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.doorIndicatorIncomplete {
+  border-color: var(--color-error-base);
+  background: var(--color-error-bg);
+}
+
+.doorIndicatorThumb {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--color-bg-skeleton);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doorIndicatorImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.doorIndicatorHex {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.doorIndicatorEmpty {
+  font-size: var(--font-size-md);
+  color: var(--color-text-disabled);
+}
+
+.doorIndicatorMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.doorIndicatorTitle {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semi);
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-caps);
-  margin: 0;
 }
 
-.insertGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.doorIndicatorValue {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doorIndicatorValueWarning {
+  color: var(--color-error-base);
+}
+
+/* ── Insert option grid ──────────────────────────────────────────────── */
+.optionGrid {
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
+  justify-content: flex-start;
 }
 
-.insertCard {
+.optionGrid > * {
+  flex: 0 0 calc((100% - 56px) / 8);
+}
+
+@media (max-width: 700px) {
+  .optionGrid > * {
+    flex: 0 0 calc((100% - 24px) / 4);
+  }
+}
+
+@media (max-width: 400px) {
+  .optionGrid > * {
+    flex: 0 0 calc((100% - 16px) / 3);
+  }
+}
+
+/* ── Insert option card ──────────────────────────────────────────────── */
+.optionCard {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2);
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-1);
   border: 2px solid var(--color-border-default);
   border-radius: var(--radius-card);
   background: var(--color-bg-surface);
   cursor: pointer;
-  /* shadow so white cards are visible against white background */
   box-shadow: var(--shadow-sm);
   transition: border-color var(--transition-fast),
               box-shadow var(--transition-fast),
               background var(--transition-fast);
   text-align: center;
+  min-width: 0;
 }
 
-.insertCard:hover {
+.optionCard:hover {
   border-color: var(--color-border-strong);
   box-shadow: var(--shadow-md);
 }
 
-.insertCard:focus-visible {
+.optionCard:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
 }
 
-.insertCardActive {
+.optionCardActive {
   border-color: var(--color-step-active-border);
   background: var(--color-step-active-bg);
   box-shadow: var(--shadow-swatch-selected);
 }
 
-.insertCardActive:hover {
+.optionCardActive:hover {
   border-color: var(--color-step-active-border);
-  box-shadow: var(--shadow-swatch-selected);
 }
 
-.insertImageWrap {
+.optionImageWrap {
   width: 100%;
   aspect-ratio: 1;
   border-radius: var(--radius-sm);
@@ -185,29 +297,43 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06),
-              inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 
-.insertImage {
+.optionImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.insertImageFallback {
-  color: var(--color-text-disabled);
+.optionImageFallback {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--color-bg-skeleton);
 }
 
-.insertName {
-  font-size: var(--font-size-xs);
+.optionName {
+  font-size: 11px;
   color: var(--color-text-primary);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-height-snug);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
-.insertNameActive {
+.optionNameActive {
   color: var(--color-primary-base);
+}
+
+/* ── Deselect hint ───────────────────────────────────────────────────── */
+.deselectHint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+  text-align: left;
 }
 
 /* ── Actions ─────────────────────────────────────────────────────────── */
@@ -215,22 +341,11 @@
   padding-top: var(--space-2);
 }
 
+/* ── Error ───────────────────────────────────────────────────────────── */
 .error {
   font-size: var(--font-size-sm);
   color: var(--color-error-base);
   padding: var(--space-3);
   background: var(--color-error-bg);
   border-radius: var(--radius-md);
-}
-
-.skeletonSwatches {
-  display: flex;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-}
-
-.skeletonInsertGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-2);
 }

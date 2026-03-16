@@ -5,21 +5,17 @@ import type {
 
 export const selectCurrentWidthRange = (
   state: WardrobeConfiguratorState,
-  widthRanges: WardrobeWidthRange[],
+  widthRanges: WardrobeWidthRange[]
 ): WardrobeWidthRange | null => {
   if (!state.wardrobeDimensions) return null;
-
   const { widthMm } = state.wardrobeDimensions;
-
   for (const range of widthRanges) {
     if (widthMm >= range.minWidthMm && widthMm <= range.maxWidthMm) {
       return range;
     }
   }
-
   return null;
 };
-
 
 export const selectAllowedDoorCounts = (
   state: WardrobeConfiguratorState,
@@ -34,6 +30,16 @@ export const selectIsDoorCountForced = (
   state: WardrobeConfiguratorState,
   widthRanges: WardrobeWidthRange[]
 ): boolean => {
-    const allowedCounts = selectAllowedDoorCounts(state, widthRanges);
-    return allowedCounts.length === 1;
-}
+  const allowedCounts = selectAllowedDoorCounts(state, widthRanges);
+  return allowedCounts.length === 1;
+};
+
+// Returns the base price for the current range + door count selection
+export const selectBasePrice = (
+  state: WardrobeConfiguratorState,
+  widthRanges: WardrobeWidthRange[]
+): number => {
+  const range = selectCurrentWidthRange(state, widthRanges);
+  if (!range || !state.wardrobeDoorCount) return 0;
+  return range.doorCountPrices[state.wardrobeDoorCount] ?? 0;
+};

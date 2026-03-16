@@ -17,8 +17,8 @@ const MAX_HEIGHT_MM = 2735;
 
 function validateWidth(value: number): string | null {
   if (isNaN(value) || value <= 0) return 'Please enter a valid width.';
-  if (value < MIN_WIDTH_MM) return `Minimum width is ${MIN_WIDTH_MM}mm.`;
-  if (value > MAX_WIDTH_MM) return `Maximum width is ${MAX_WIDTH_MM}mm.`;
+  if (value < MIN_WIDTH_MM)  return `Minimum width is ${MIN_WIDTH_MM}mm.`;
+  if (value > MAX_WIDTH_MM)  return `Maximum width is ${MAX_WIDTH_MM}mm.`;
   return null;
 }
 
@@ -30,12 +30,12 @@ function validateHeight(value: number): string | null {
 }
 
 function getStatus(error: string | null, value: string): InputStatus {
-  if (!value) return 'default';
-  if (error) return 'error';
+  if (!value)  return 'default';
+  if (error)   return 'error';
   return 'success';
 }
 
-// ─── Inner form (keyed — remounts on reset to clear local state) ──────────────
+// ─── Inner form ───────────────────────────────────────────────────────────────
 
 interface FormProps {
   initialWidth: string;
@@ -46,23 +46,23 @@ interface FormProps {
 function DimensionsForm({ initialWidth, initialHeight, onComplete }: FormProps) {
   const { dispatch } = useWardrobeState();
 
-  const [widthRaw,  setWidthRaw]  = useState<string>(initialWidth);
   const [heightRaw, setHeightRaw] = useState<string>(initialHeight);
+  const [widthRaw,  setWidthRaw]  = useState<string>(initialWidth);
 
-  const debouncedWidth  = useDebounce(widthRaw,  400);
   const debouncedHeight = useDebounce(heightRaw, 400);
+  const debouncedWidth  = useDebounce(widthRaw,  400);
 
-  const widthNum  = parseFloat(debouncedWidth);
   const heightNum = parseFloat(debouncedHeight);
+  const widthNum  = parseFloat(debouncedWidth);
 
-  const widthError  = debouncedWidth  ? validateWidth(widthNum)   : null;
   const heightError = debouncedHeight ? validateHeight(heightNum) : null;
+  const widthError  = debouncedWidth  ? validateWidth(widthNum)   : null;
 
   const isValid =
-    debouncedWidth !== '' &&
     debouncedHeight !== '' &&
-    widthError === null &&
-    heightError === null;
+    debouncedWidth  !== '' &&
+    heightError === null &&
+    widthError  === null;
 
   useEffect(() => {
     if (isValid) {
@@ -73,13 +73,13 @@ function DimensionsForm({ initialWidth, initialHeight, onComplete }: FormProps) 
     }
   }, [debouncedWidth, debouncedHeight, isValid, widthNum, heightNum, dispatch]);
 
-  const handleWidthChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => setWidthRaw(e.target.value),
+  const handleHeightChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => setHeightRaw(e.target.value),
     []
   );
 
-  const handleHeightChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => setHeightRaw(e.target.value),
+  const handleWidthChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => setWidthRaw(e.target.value),
     []
   );
 
@@ -91,26 +91,11 @@ function DimensionsForm({ initialWidth, initialHeight, onComplete }: FormProps) 
     <div className={styles.form}>
       <p className={styles.hint}>
         Enter your opening dimensions in millimetres.
-        Width up to <strong>{MAX_WIDTH_MM}mm</strong>, height up to <strong>{MAX_HEIGHT_MM}mm</strong>.
+        Height up to <strong>{MAX_HEIGHT_MM}mm</strong>, width up to <strong>{MAX_WIDTH_MM}mm</strong>.
       </p>
 
+      {/* Height first, then Width — displayed as H × W throughout */}
       <div className={styles.fieldRow}>
-        <Input
-          label="Width"
-          type="number"
-          suffix="mm"
-          min={MIN_WIDTH_MM}
-          max={MAX_WIDTH_MM}
-          step={1}
-          value={widthRaw}
-          onChange={handleWidthChange}
-          status={getStatus(widthError, widthRaw)}
-          errorText={widthError ?? undefined}
-          helperText={!widthError && widthRaw ? `${widthNum}mm` : undefined}
-          placeholder="e.g. 2400"
-          required
-        />
-
         <Input
           label="Height"
           type="number"
@@ -123,6 +108,21 @@ function DimensionsForm({ initialWidth, initialHeight, onComplete }: FormProps) 
           status={getStatus(heightError, heightRaw)}
           errorText={heightError ?? undefined}
           helperText={!heightError && heightRaw ? `${heightNum}mm` : undefined}
+          placeholder="e.g. 2400"
+          required
+        />
+        <Input
+          label="Width"
+          type="number"
+          suffix="mm"
+          min={MIN_WIDTH_MM}
+          max={MAX_WIDTH_MM}
+          step={1}
+          value={widthRaw}
+          onChange={handleWidthChange}
+          status={getStatus(widthError, widthRaw)}
+          errorText={widthError ?? undefined}
+          helperText={!widthError && widthRaw ? `${widthNum}mm` : undefined}
           placeholder="e.g. 2400"
           required
         />
@@ -144,8 +144,6 @@ function DimensionsForm({ initialWidth, initialHeight, onComplete }: FormProps) 
 }
 
 // ─── Step2Dimensions ──────────────────────────────────────────────────────────
-// Uses `key` on DimensionsForm so React fully remounts it when dimensions
-// are reset to null — cleanly clearing local state without setState-in-effect.
 
 interface Props {
   onComplete: () => void;
@@ -157,8 +155,6 @@ export default function Step2Dimensions({ onComplete }: Props) {
   const initialWidth  = state.wardrobeDimensions?.widthMm.toString()  ?? '';
   const initialHeight = state.wardrobeDimensions?.heightMm.toString() ?? '';
 
-  // Key changes null → 'filled' on first entry, 'filled' → 'empty' on reset.
-  // DimensionsForm remounts automatically — no setState-in-effect needed.
   const formKey = state.wardrobeDimensions === null ? 'empty' : 'filled';
 
   return (

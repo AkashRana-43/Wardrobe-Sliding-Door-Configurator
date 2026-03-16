@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { slidingDoorService } from '@/services/slidingDoorService';
 import { useWardrobeState } from '@/state/useWardrobeContext';
 import { useCart, useAuth } from '@/state/useCartAuth';
+import { calculateWardrobePrice } from '@/domain/pricing/wardrobePricing';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import type {
@@ -9,17 +10,19 @@ import type {
   WardrobeDoorMelamineColour,
   WardrobeExtra,
   WardrobeDoorInsert,
+  WardrobeType,
+  WardrobeWidthRange,
 } from '@/domain/models/slidingDoorConfig';
 import styles from './Step6Summary.module.css';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatPrice(cents: number): string {
+function formatPrice(dollars: number): string {
   return new Intl.NumberFormat('en-AU', {
     style: 'currency',
     currency: 'AUD',
     minimumFractionDigits: 2,
-  }).format(cents / 100);
+  }).format(dollars);
 }
 
 function formatType(id: string): string {
@@ -49,23 +52,29 @@ export default function Step6Summary({ onAddToCart, onQuote }: Props) {
   const { addToCart, openCart } = useCart();
   const { authState } = useAuth();
 
-  const [stilesOptions, setStilesOptions] = useState<WardrobeStilesAndTracks[]>([]);
-  const [colourOptions, setColourOptions] = useState<WardrobeDoorMelamineColour[]>([]);
-  const [extrasOptions, setExtrasOptions] = useState<WardrobeExtra[]>([]);
-  const [insertOptions, setInsertOptions] = useState<WardrobeDoorInsert[]>([]);
-  const [isLoading, setIsLoading]         = useState(true);
-  const [reference, setReference]         = useState('');
+  const [wardrobeTypes,  setWardrobeTypes]  = useState<WardrobeType[]>([]);
+  const [widthRanges,    setWidthRanges]    = useState<WardrobeWidthRange[]>([]);
+  const [stilesOptions,  setStilesOptions]  = useState<WardrobeStilesAndTracks[]>([]);
+  const [colourOptions,  setColourOptions]  = useState<WardrobeDoorMelamineColour[]>([]);
+  const [extrasOptions,  setExtrasOptions]  = useState<WardrobeExtra[]>([]);
+  const [insertOptions,  setInsertOptions]  = useState<WardrobeDoorInsert[]>([]);
+  const [isLoading,      setIsLoading]      = useState(true);
+  const [reference,      setReference]      = useState('');
 
   useEffect(() => {
     let cancelled = false;
     Promise.all([
+      slidingDoorService.getWardrobeTypes(),
+      slidingDoorService.getWardrobeWidthRanges(),
       slidingDoorService.getWardrobeStilesAndTracks(),
       slidingDoorService.getWardrobeDoorMelamineColours(),
       slidingDoorService.getWardrobeExtras(),
       slidingDoorService.getWardrobeDoorInserts(),
     ])
-      .then(([stilesData, coloursData, extrasData, insertsData]) => {
+      .then(([typesData, rangesData, stilesData, coloursData, extrasData, insertsData]) => {
         if (!cancelled) {
+          setWardrobeTypes(typesData);
+          setWidthRanges(rangesData);
           setStilesOptions(stilesData);
           setColourOptions(coloursData);
           setExtrasOptions(extrasData);
@@ -78,36 +87,53 @@ export default function Step6Summary({ onAddToCart, onQuote }: Props) {
   }, []);
 
   // ── Derived values ─────────────────────────────────────────────────
-  const doorCount = state.wardrobeDoorCount ?? 0;
+  const doorCount      = state.wardrobeDoorCount ?? 0;
+  const globalColour   = colourOptions.find((c) => c.id === state.wardrobeDoorMelamineColourId);
+  const selectedStiles = stilesOptions.find((s) => s.id === state.wardrobeStilesAndTracksId);
 
-  const allDoorsHaveInsert =
-    doorCount > 0 &&
-    state.wardrobeDoorConfigurations.length === doorCount &&
-    state.wardrobeDoorConfigurations.every((d) => d.insertId !== null);
+  // Calculate full price breakdown
+  const priceBreakdown = isLoading ? null : calculateWardrobePrice(state, {
+    wardrobeTypes,
+    widthRanges,
+    doorInserts: insertOptions,
+    stilesAndTracks: stilesOptions,
+    extras: extrasOptions,
+  });
 
-  const selectedColour  = colourOptions.find((c) => c.id === state.wardrobeDoorMelamineColourId);
-  const selectedStiles  = stilesOptions.find((s) => s.id === state.wardrobeStilesAndTracksId);
-  const selectedExtras  = extrasOptions.filter((e) => (state.wardrobeSelectedExtras[e.id] ?? 0) > 0);
-  const extrasTotal     = selectedExtras.reduce(
-    (sum, e) => sum + e.price * (state.wardrobeSelectedExtras[e.id] ?? 0), 0
+  // Extras shown in config recap (quantity > 0, excludes tracks which have their own rows)
+  const TRACK_IDS = ['extra-top-track', 'extra-bottom-track'];
+  const selectedExtras = extrasOptions.filter(
+    (e) => !TRACK_IDS.includes(e.id) && (state.wardrobeSelectedExtras[e.id] ?? 0) > 0
   );
 
-  // ── Add to cart — reset configurator after ─────────────────────────
+  // Track extras
+  const topTrack    = extrasOptions.find((e) => e.id === 'extra-top-track');
+  const bottomTrack = extrasOptions.find((e) => e.id === 'extra-bottom-track');
+
+  // ── Incomplete step detection ──────────────────────────────────────
+  const incompleteSteps: string[] = [];
+  if (!state.wardrobeTypeId)          incompleteSteps.push('Wardrobe Type');
+  if (!state.wardrobeDimensions)      incompleteSteps.push('Dimensions');
+  if (!state.wardrobeDoorCount)       incompleteSteps.push('Door Count');
+  if (
+    !state.wardrobeDoorMelamineColourId &&
+    !state.wardrobeDoorConfigurations.every(d => d.insertId !== null)
+  )                                   incompleteSteps.push('Materials');
+  if (!state.wardrobeStilesAndTracksId) incompleteSteps.push('Stiles, Tracks & Extras');
+
+  const isReadyToOrder = incompleteSteps.length === 0 && !!priceBreakdown;
+
+  // ── Add to cart ────────────────────────────────────────────────────
   const handleAddToCart = () => {
+    if (!priceBreakdown) return;
     addToCart({
       wardrobeSnapshot: { ...state },
-      priceBreakdown: {
-        basePrice: 0,
-        wardrobeTypePrice: 0,
-        insertPrice: 0,
-        stilesAndTracksPrice: 0,
-        extrasPrice: extrasTotal,
-        total: extrasTotal,
-      },
+      priceBreakdown,
       reference: reference.trim() || undefined,
     });
     openCart();
     dispatch({ type: 'RESET' });
+    setReference('');
     onAddToCart();
   };
 
@@ -129,7 +155,7 @@ export default function Step6Summary({ onAddToCart, onQuote }: Props) {
 
           <ConfigRow label="Dimensions">
             {state.wardrobeDimensions
-              ? `${state.wardrobeDimensions.widthMm}mm × ${state.wardrobeDimensions.heightMm}mm`
+              ? `${state.wardrobeDimensions.heightMm}mm × ${state.wardrobeDimensions.widthMm}mm`
               : <span className={styles.configEmpty}>—</span>}
           </ConfigRow>
 
@@ -139,25 +165,26 @@ export default function Step6Summary({ onAddToCart, onQuote }: Props) {
               : <span className={styles.configEmpty}>—</span>}
           </ConfigRow>
 
-          <ConfigRow label="Door Colour">
-            {allDoorsHaveInsert ? (
-              <span className={styles.configNotRequired}>Not required</span>
-            ) : selectedColour ? (
-              <>
-                <span className={styles.configDot} style={{ backgroundColor: selectedColour.hexPreview }} />
-                {selectedColour.name}
-              </>
-            ) : (
-              <span className={styles.configEmpty}>—</span>
-            )}
-          </ConfigRow>
+          {/* Global melamine colour — shown if set */}
+          {globalColour && (
+            <ConfigRow label={
+              state.wardrobeDoorConfigurations.some(d => d.insertId !== null)
+                ? 'Door Colour (remaining)'
+                : 'Door Colour'
+            }>
+              <span className={styles.configDot} style={{ backgroundColor: globalColour.hexPreview }} />
+              {globalColour.name}
+            </ConfigRow>
+          )}
 
+          {/* Per-door: insert overrides colour on that door */}
           {Array.from({ length: doorCount }, (_, i) => {
-            const insertId   = state.wardrobeDoorConfigurations.find((d) => d.doorIndex === i)?.insertId ?? null;
-            const insertName = insertOptions.find((ins) => ins.id === insertId)?.name;
+            const doorCfg = state.wardrobeDoorConfigurations.find((d) => d.doorIndex === i);
+            const insert  = insertOptions.find((ins) => ins.id === doorCfg?.insertId);
+            if (!insert) return null; // door uses global colour — no extra row needed
             return (
               <ConfigRow key={i} label={`Door ${i + 1}`}>
-                {insertName ?? <span className={styles.configEmpty}>No insert</span>}
+                {insert.name}
               </ConfigRow>
             );
           })}
@@ -173,6 +200,25 @@ export default function Step6Summary({ onAddToCart, onQuote }: Props) {
             )}
           </ConfigRow>
 
+          {/* Top track */}
+          {topTrack && (state.wardrobeSelectedExtras[topTrack.id] ?? 0) > 0 && (
+            <ConfigRow label="Top Track">
+              {state.wardrobeTrackLengthMm.top != null
+                ? `${state.wardrobeTrackLengthMm.top}mm × ${state.wardrobeSelectedExtras[topTrack.id]}`
+                : `× ${state.wardrobeSelectedExtras[topTrack.id]}`}
+            </ConfigRow>
+          )}
+
+          {/* Bottom track */}
+          {bottomTrack && (state.wardrobeSelectedExtras[bottomTrack.id] ?? 0) > 0 && (
+            <ConfigRow label="Bottom Track">
+              {state.wardrobeTrackLengthMm.bottom != null
+                ? `${state.wardrobeTrackLengthMm.bottom}mm × ${state.wardrobeSelectedExtras[bottomTrack.id]}`
+                : `× ${state.wardrobeSelectedExtras[bottomTrack.id]}`}
+            </ConfigRow>
+          )}
+
+          {/* Optional extras */}
           {selectedExtras.map((extra) => (
             <ConfigRow key={extra.id} label={extra.name}>
               × {state.wardrobeSelectedExtras[extra.id]}
@@ -185,27 +231,15 @@ export default function Step6Summary({ onAddToCart, onQuote }: Props) {
       <hr className={styles.divider} />
 
       {/* ── Price (logged in only) ───────────────────────────────────── */}
-      {authState.isLoggedIn && (
+      {authState.isLoggedIn && priceBreakdown && (
         <div className={styles.section}>
           <p className={styles.sectionTitle}>Pricing</p>
           <div className={styles.priceSection}>
-            {selectedExtras.length > 0 ? (
-              selectedExtras.map((extra) => {
-                const qty = state.wardrobeSelectedExtras[extra.id] ?? 0;
-                return (
-                  <div key={extra.id} className={styles.priceRow}>
-                    <span className={styles.priceLabel}>{extra.name} × {qty}</span>
-                    <span className={styles.priceAmount}>{formatPrice(extra.price * qty)}</span>
-                  </div>
-                );
-              })
-            ) : (
-              <p className={styles.priceEmpty}>No optional extras added</p>
-            )}
             <div className={styles.priceTotalRow}>
               <span className={styles.priceTotalLabel}>Total</span>
-              <span className={styles.priceTotalAmount}>{formatPrice(extrasTotal)}</span>
+              <span className={styles.priceTotalAmount}>{formatPrice(priceBreakdown.total)}</span>
             </div>
+            <p className={styles.priceGstNote}>Price excludes GST</p>
           </div>
         </div>
       )}
@@ -218,25 +252,49 @@ export default function Step6Summary({ onAddToCart, onQuote }: Props) {
       )}
 
       {/* ── Actions ─────────────────────────────────────────────────── */}
-      <div className={styles.actions}>
-        {authState.isLoggedIn ? (
-          <>
-            <Input
-              label="Reference"
-              placeholder="e.g. Master bedroom, Client name…"
-              value={reference}
-              onChange={(e) => setReference(e.target.value)}
-            />
-            <Button variant="primary" size="md" fullWidth onClick={handleAddToCart}>
-              Add to Cart
-            </Button>
-          </>
-        ) : (
-          <Button variant="primary" size="md" fullWidth onClick={onQuote}>
+      {authState.isLoggedIn && (
+        <div className={styles.actions}>
+          {!isReadyToOrder && incompleteSteps.length > 0 && (
+            <p className={styles.incompleteNote}>
+              Please complete: <strong>{incompleteSteps.join(', ')}</strong> to proceed.
+            </p>
+          )}
+          <Input
+            label="Reference"
+            placeholder="e.g. Master bedroom, Client name…"
+            value={reference}
+            onChange={(e) => setReference(e.target.value)}
+          />
+          <Button
+            variant="primary"
+            size="md"
+            fullWidth
+            disabled={!isReadyToOrder}
+            onClick={handleAddToCart}
+          >
+            Add to Cart
+          </Button>
+        </div>
+      )}
+
+      {!authState.isLoggedIn && (
+        <div className={styles.actions}>
+          {!isReadyToOrder && incompleteSteps.length > 0 && (
+            <p className={styles.incompleteNote}>
+              Please complete: <strong>{incompleteSteps.join(', ')}</strong> to proceed.
+            </p>
+          )}
+          <Button
+            variant="primary"
+            size="md"
+            fullWidth
+            disabled={!isReadyToOrder}
+            onClick={onQuote}
+          >
             Ask a Quote
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
     </div>
   );
