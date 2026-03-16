@@ -1,7 +1,6 @@
 import React, { Suspense, useCallback } from 'react';
 import AccordionStep from '@/pages/Configurator/components/AccordionStep/AccordionStep';
 import type { StepStatus } from '@/pages/Configurator/components/AccordionStep/AccordionStep';
-import Button from '@/components/ui/Button';
 import { SkeletonAccordionStep } from '@/components/ui/SkeletonLoader';
 import { useAuth } from '@/state/useCartAuth';
 import { STEP_CONFIGS } from './stepConfigs';
@@ -14,8 +13,6 @@ export interface ConfiguratorAccordionProps {
   completedSteps: Set<number>;
   totalPrice: number;
   onStepToggle: (stepNumber: number) => void;
-  onCheckout: () => void;
-  onQuote: () => void;
   stepContent: Record<number, React.ReactNode>;
   stepSummaries?: Partial<Record<number, string>>;
   isLoading?: boolean;
@@ -23,12 +20,12 @@ export interface ConfiguratorAccordionProps {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatPrice(cents: number): string {
+function formatPrice(dollars: number): string {
   return new Intl.NumberFormat('en-AU', {
     style: 'currency',
     currency: 'AUD',
     minimumFractionDigits: 2,
-  }).format(cents / 100);
+  }).format(dollars);
 }
 
 function getStepStatus(
@@ -48,8 +45,6 @@ const ConfiguratorAccordion = React.memo(function ConfiguratorAccordion({
   completedSteps,
   totalPrice,
   onStepToggle,
-  onCheckout,
-  onQuote,
   stepContent,
   stepSummaries = {},
   isLoading = false,
@@ -93,36 +88,14 @@ const ConfiguratorAccordion = React.memo(function ConfiguratorAccordion({
       </div>
 
       {/* ── Footer ─────────────────────────────────────────────────── */}
-      <div className={styles.footer}>
-        {authState.isLoggedIn && totalPrice > 0 && (
+      {authState.isLoggedIn && totalPrice > 0 && (
+        <div className={styles.footer}>
           <div className={styles.priceRow}>
             <span className={styles.priceLabel}>Total</span>
             <span className={styles.priceAmount}>{formatPrice(totalPrice)}</span>
           </div>
-        )}
-
-        {authState.isLoggedIn ? (
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            onClick={onCheckout}
-            disabled={completedSteps.size < 5}
-          >
-            Checkout
-          </Button>
-        ) : (
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            onClick={onQuote}
-            disabled={completedSteps.size < 1}
-          >
-            Ask a Quote
-          </Button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 });

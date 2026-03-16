@@ -98,29 +98,6 @@
   overflow: hidden;
 }
 
-.priceRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.priceRow:last-child {
-  border-bottom: none;
-}
-
-.priceLabel {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-.priceAmount {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-}
-
 .priceTotalRow {
   display: flex;
   align-items: center;
@@ -139,6 +116,14 @@
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
+}
+
+.priceGstNote {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-align: right;
+  padding: var(--space-1) var(--space-4) var(--space-2);
+  margin: 0;
 }
 
 .priceEmpty {
@@ -173,4 +158,15 @@
   padding: var(--space-3);
   background: var(--color-error-bg);
   border-radius: var(--radius-md);
+}
+
+/* ── Incomplete steps note ───────────────────────────────────────────── */
+.incompleteNote {
+  font-size: var(--font-size-sm);
+  color: var(--color-error-base);
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-base);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  margin: 0;
 }

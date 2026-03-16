@@ -47,7 +47,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--space-1);
+  padding: 2px;
   border-radius: var(--radius-md);
   transition: background var(--transition-fast);
 }
@@ -58,12 +58,15 @@
 
 .stilesButton:focus-visible {
   outline: none;
+}
+
+.stilesButton:focus-visible .stilesSwatch {
   box-shadow: var(--focus-ring);
 }
 
 .stilesSwatch {
-  width: var(--size-swatch-lg);
-  height: var(--size-swatch-lg);
+  width: 192px;
+  height: 192px;
   border-radius: var(--radius-swatch);
   border: 2px solid var(--color-swatch-border);
   overflow: hidden;
@@ -97,7 +100,7 @@
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   text-align: center;
-  max-width: 56px;
+  max-width: 192px;
   line-height: var(--line-height-snug);
   white-space: nowrap;
   overflow: hidden;
@@ -149,7 +152,8 @@
 .extraThumbImg {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 4px;
 }
 
 .extraInfo {
@@ -169,6 +173,12 @@
   text-overflow: ellipsis;
 }
 
+.extraMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 .extraBadge {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
@@ -177,6 +187,58 @@
   padding: 1px 6px;
   display: inline-block;
   width: fit-content;
+}
+
+.extraPriceLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ── Track length input ──────────────────────────────────────────────── */
+.trackInputWrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+  margin-right: var(--space-3);
+}
+
+.trackInput {
+  width: 72px;
+  height: 32px;
+  border: 1.5px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  text-align: center;
+  padding: 0 var(--space-2);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  /* hide browser number spinners */
+  -moz-appearance: textfield;
+}
+
+.trackInput::-webkit-outer-spin-button,
+.trackInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.trackInput:focus {
+  outline: none;
+  border-color: var(--color-primary-base);
+  box-shadow: var(--focus-ring);
+}
+
+.trackInput::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.trackInputUnit {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
 }
 
 /* ── Quantity stepper ────────────────────────────────────────────────── */
@@ -254,4 +316,130 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+}
+
+/* ── Stiles section header row ───────────────────────────────────────── */
+.sectionHeaderRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* ── Track row wrapper (for inline error below row) ─────────────────── */
+.trackRowWrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* ── Track error state ───────────────────────────────────────────────── */
+.extraRowError {
+  border-color: var(--color-error-base) !important;
+  background: var(--color-error-bg) !important;
+}
+
+.trackError {
+  font-size: var(--font-size-xs);
+  color: var(--color-error-base);
+  margin: 0;
+  padding-left: var(--space-1);
+}
+
+.trackInputError {
+  border-color: var(--color-error-base) !important;
+  color: var(--color-error-base);
+}
+
+/* ── Track display list (below included note) ────────────────────────── */
+.trackDisplayList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.extraRowDisabled {
+  opacity: 0.6;
+  pointer-events: none;
+  background: var(--color-bg-subtle);
+}
+
+.trackQtyLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semi);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ── Stiles section — single column ─────────────────────────────────── */
+.stilesSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.stilesLeft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.stilesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Track included note */
+.trackIncludedNote {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-subtle);
+  border-left: 3px solid var(--color-primary-base);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  margin: 0;
+}
+
+/* ── Stiles selected preview ─────────────────────────────────────────── */
+.stilesPreview {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--color-bg-skeleton);
+}
+
+.stilesPreviewImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.stilesPreviewFallback {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ── Track error state ───────────────────────────────────────────────── */
+.extraRowError {
+  border-color: var(--color-error-base) !important;
+  background: var(--color-error-bg) !important;
+}
+
+.trackError {
+  font-size: var(--font-size-xs);
+  color: var(--color-error-base);
+  font-weight: var(--font-weight-medium);
+}
+
+.trackInputError {
+  border-color: var(--color-error-base) !important;
+  color: var(--color-error-base);
 }

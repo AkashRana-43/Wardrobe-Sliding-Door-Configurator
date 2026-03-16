@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { slidingDoorService } from '@/services/slidingDoorService';
 import { useWardrobeState } from '@/state/useWardrobeContext';
 import Button from '@/components/ui/Button';
-import { SkeletonSwatch, SkeletonBox } from '@/components/ui/SkeletonLoader';
+import { SkeletonBox } from '@/components/ui/SkeletonLoader';
 import type {
   WardrobeDoorMelamineColour,
   WardrobeDoorInsert,
@@ -14,36 +14,42 @@ import styles from './Step4Materials.module.css';
 interface ColourSwatchProps {
   colour: WardrobeDoorMelamineColour;
   isSelected: boolean;
+  disabled: boolean;
   onSelect: (id: string) => void;
 }
 
-const ColourSwatch = React.memo(function ColourSwatch({ colour, isSelected, onSelect }: ColourSwatchProps) {
+const ColourSwatch = React.memo(function ColourSwatch({
+  colour, isSelected, disabled, onSelect,
+}: ColourSwatchProps) {
   const [imgError, setImgError] = useState(false);
-
   return (
     <button
       type="button"
-      className={styles.swatchButton}
-      onClick={() => onSelect(colour.id)}
+      className={[
+        styles.swatchButton,
+        isSelected ? styles.swatchButtonActive : '',
+        disabled ? styles.swatchButtonDisabled : '',
+      ].filter(Boolean).join(' ')}
+      onClick={() => !disabled && onSelect(colour.id)}
+      disabled={disabled}
       aria-pressed={isSelected}
       aria-label={colour.name}
       title={colour.name}
     >
-      <span
-        className={isSelected ? `${styles.swatch} ${styles.swatchActive}` : styles.swatch}
-        style={imgError ? { backgroundColor: colour.hexPreview } : undefined}
-      >
-        {!imgError && (
+      <div className={[styles.swatch, isSelected ? styles.swatchActive : ''].filter(Boolean).join(' ')}>
+        {!imgError ? (
           <img
             src={colour.image}
-            alt={colour.hexPreview}
+            alt={colour.name}
             className={styles.swatchImg}
             onError={() => setImgError(true)}
             loading="lazy"
           />
+        ) : (
+          <span className={styles.swatchHex} style={{ backgroundColor: colour.hexPreview }} />
         )}
-      </span>
-      <span className={isSelected ? `${styles.swatchName} ${styles.swatchNameActive}` : styles.swatchName}>
+      </div>
+      <span className={[styles.swatchName, isSelected ? styles.swatchNameActive : ''].filter(Boolean).join(' ')}>
         {colour.name}
       </span>
     </button>
@@ -53,46 +59,104 @@ const ColourSwatch = React.memo(function ColourSwatch({ colour, isSelected, onSe
 // ─── InsertCard ───────────────────────────────────────────────────────────────
 
 interface InsertCardProps {
-  insert: WardrobeDoorInsert | null;
+  insert: WardrobeDoorInsert;
   isSelected: boolean;
-  onSelect: (id: string | null) => void;
+  onSelect: () => void;
 }
 
 const InsertCard = React.memo(function InsertCard({ insert, isSelected, onSelect }: InsertCardProps) {
   const [imgError, setImgError] = useState(false);
-
   return (
     <button
       type="button"
-      className={isSelected ? `${styles.insertCard} ${styles.insertCardActive}` : styles.insertCard}
-      onClick={() => onSelect(insert?.id ?? null)}
+      className={[
+        styles.optionCard,
+        isSelected ? styles.optionCardActive : '',
+      ].filter(Boolean).join(' ')}
+      onClick={onSelect}
       aria-pressed={isSelected}
-      aria-label={insert ? insert.name : 'No insert'}
+      aria-label={insert.name}
     >
-      <div className={styles.insertImageWrap}>
-        {insert && !imgError ? (
+      <div className={styles.optionImageWrap}>
+        {insert.image && !imgError ? (
           <img
             src={insert.image}
             alt={insert.name}
-            className={styles.insertImage}
+            className={styles.optionImage}
             onError={() => setImgError(true)}
             loading="lazy"
           />
         ) : (
-          <span className={styles.insertImageFallback} aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25">
-              {insert
-                ? <rect x="3" y="3" width="18" height="18" rx="2" />
-                : <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
-              }
-            </svg>
-          </span>
+          <span className={styles.optionImageFallback} />
         )}
       </div>
-      <span className={isSelected ? `${styles.insertName} ${styles.insertNameActive}` : styles.insertName}>
-        {insert ? insert.name : 'None'}
+      <span className={[styles.optionName, isSelected ? styles.optionNameActive : ''].filter(Boolean).join(' ')}>
+        {insert.name}
       </span>
     </button>
+  );
+});
+
+// ─── DoorIndicator ────────────────────────────────────────────────────────────
+
+interface DoorIndicatorProps {
+  doorIndex: number;
+  globalColour: WardrobeDoorMelamineColour | null;
+  selectedInsert: WardrobeDoorInsert | null;
+  isIncomplete: boolean;
+}
+
+const DoorIndicator = React.memo(function DoorIndicator({
+  doorIndex, globalColour, selectedInsert, isIncomplete,
+}: DoorIndicatorProps) {
+  const [imgError, setImgError] = useState(false);
+
+  // Insert takes priority — replaces colour on this door
+  const image = selectedInsert?.image ?? globalColour?.image ?? null;
+
+  // Reset error state whenever the image source changes
+  const prevImageRef = React.useRef<string | null>(null);
+  if (prevImageRef.current !== image) {
+    prevImageRef.current = image;
+    if (imgError) setImgError(false);
+  }
+  const hex   = selectedInsert ? undefined : globalColour?.hexPreview;
+  const label = selectedInsert?.name ?? globalColour?.name ?? null;
+
+  return (
+    <div className={[
+      styles.doorIndicator,
+      isIncomplete ? styles.doorIndicatorIncomplete : '',
+    ].filter(Boolean).join(' ')}>
+      <div className={styles.doorIndicatorThumb}>
+        {image && !imgError ? (
+          <img
+            src={image}
+            alt={label ?? ''}
+            className={styles.doorIndicatorImg}
+            onError={() => setImgError(true)}
+            loading="lazy"
+          />
+        ) : hex ? (
+          <span className={styles.doorIndicatorHex} style={{ backgroundColor: hex }} />
+        ) : (
+          <span className={styles.doorIndicatorEmpty} aria-hidden="true">?</span>
+        )}
+      </div>
+      <div className={styles.doorIndicatorMeta}>
+        <span className={styles.doorIndicatorTitle}>Door {doorIndex + 1}</span>
+        <span className={[
+          styles.doorIndicatorValue,
+          isIncomplete ? styles.doorIndicatorValueWarning : '',
+        ].filter(Boolean).join(' ')}>
+          {selectedInsert
+            ? selectedInsert.name
+            : globalColour
+              ? globalColour.name
+              : 'Select an option'}
+        </span>
+      </div>
+    </div>
   );
 });
 
@@ -102,18 +166,27 @@ function Step4Skeleton() {
   return (
     <div className={styles.root}>
       <div className={styles.section}>
-        <SkeletonBox width={120} height={16} borderRadius="var(--radius-sm)" />
-        <div className={styles.skeletonSwatches}>
-          {Array.from({ length: 6 }, (_, i) => <SkeletonSwatch key={i} size="lg" />)}
-        </div>
-      </div>
-      <div className={styles.section}>
-        <SkeletonBox width={160} height={16} borderRadius="var(--radius-sm)" />
-        <div className={styles.skeletonInsertGrid}>
-          {Array.from({ length: 5 }, (_, i) => (
-            <SkeletonBox key={i} width="100%" height={90} borderRadius="var(--radius-card)" />
+        <SkeletonBox width={120} height={13} borderRadius="var(--radius-sm)" />
+        <SkeletonBox width={200} height={11} borderRadius="var(--radius-sm)" />
+        <div className={styles.swatchRow}>
+          {Array.from({ length: 7 }, (_, i) => (
+            <SkeletonBox key={i} width={64} height={82} borderRadius="var(--radius-md)" />
           ))}
         </div>
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.section}>
+        <SkeletonBox width={100} height={13} borderRadius="var(--radius-sm)" />
+        {Array.from({ length: 2 }, (_, i) => (
+          <div key={i} className={styles.doorBlock}>
+            <SkeletonBox width="100%" height={60} borderRadius="var(--radius-card)" />
+            <div className={styles.optionGrid}>
+              {Array.from({ length: 4 }, (_, j) => (
+                <SkeletonBox key={j} width="100%" height={88} borderRadius="var(--radius-card)" />
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -154,69 +227,83 @@ export default function Step4Materials({ onComplete }: Props) {
     return () => { cancelled = true; };
   }, []);
 
-  // ── Declare doorCount BEFORE any callbacks that reference it ───────
-  const doorCount = state.wardrobeDoorCount ?? 0;
+  const doorCount      = state.wardrobeDoorCount ?? 0;
+  const globalColourId = state.wardrobeDoorMelamineColourId;
+  const globalColour   = colours.find((c) => c.id === globalColourId) ?? null;
 
+  // All doors have an insert → melamine colour section is disabled + cleared
   const allDoorsHaveInsert =
     doorCount > 0 &&
-    state.wardrobeDoorConfigurations.length === doorCount &&
-    state.wardrobeDoorConfigurations.every((d) => d.insertId !== null);
+    Array.from({ length: doorCount }, (_, i) => i).every((i) => {
+      const cfg = state.wardrobeDoorConfigurations.find((d) => d.doorIndex === i);
+      return cfg?.insertId != null;
+    });
 
-  const colourRequired = !allDoorsHaveInsert;
-  const canContinue    = colourRequired ? !!state.wardrobeDoorMelamineColourId : true;
+  // Every door must have either a global melamine OR a per-door insert
+  const canContinue =
+    doorCount > 0 &&
+    Array.from({ length: doorCount }, (_, i) => i).every((i) => {
+      const cfg = state.wardrobeDoorConfigurations.find((d) => d.doorIndex === i);
+      return cfg?.insertId != null || globalColourId != null;
+    });
 
-  // ── Callbacks ──────────────────────────────────────────────────────
-  const handleColourSelect = useCallback(
-    (id: string) => dispatch({ type: 'SET_MELAMINE_COLOUR', payload: id }),
-    [dispatch]
-  );
+  // ── Global melamine colour selection ───────────────────────────────
+  const handleColourSelect = useCallback((colourId: string) => {
+    dispatch({ type: 'SET_MELAMINE_COLOUR', payload: colourId });
+  }, [dispatch]);
 
-  const handleInsertSelect = useCallback(
-    (doorIndex: number, insertId: string | null) => {
-      dispatch({ type: 'SET_DOOR_INSERT', payload: { doorIndex, insertId } });
+  // ── Per-door insert toggle ─────────────────────────────────────────
+  const handleInsertSelect = useCallback((doorIndex: number, insertId: string) => {
+    const currentInsertId = state.wardrobeDoorConfigurations
+      .find((d) => d.doorIndex === doorIndex)?.insertId ?? null;
 
-      // Compute what configs will look like after this update
+    // Clicking the active insert deselects it
+    const nextInsertId = currentInsertId === insertId ? null : insertId;
+    dispatch({ type: 'SET_DOOR_INSERT', payload: { doorIndex, insertId: nextInsertId } });
+
+    // If all doors will now have inserts → clear global melamine colour
+    if (nextInsertId !== null) {
       const updatedConfigs = state.wardrobeDoorConfigurations.map((d) =>
-        d.doorIndex === doorIndex ? { ...d, insertId } : d
+        d.doorIndex === doorIndex ? { ...d, insertId: nextInsertId } : d
       );
-      const willAllHaveInserts =
-        doorCount > 0 &&
-        updatedConfigs.length === doorCount &&
-        updatedConfigs.every((d) => d.insertId !== null);
-
-      if (willAllHaveInserts) {
+      const willAllHaveInsert = Array.from({ length: doorCount }, (_, i) => i).every((i) => {
+        const cfg = updatedConfigs.find((d) => d.doorIndex === i);
+        return cfg?.insertId != null;
+      });
+      if (willAllHaveInsert) {
         dispatch({ type: 'CLEAR_MELAMINE_COLOUR' });
       }
-    },
-    [dispatch, state.wardrobeDoorConfigurations, doorCount]
-  );
+    }
+  }, [dispatch, state.wardrobeDoorConfigurations, doorCount]);
 
   const handleContinue = useCallback(() => {
     if (canContinue) onComplete();
   }, [canContinue, onComplete]);
 
-  // ── Render ─────────────────────────────────────────────────────────
   if (isLoading) return <Step4Skeleton />;
   if (error)     return <p className={styles.error}>{error}</p>;
 
   return (
     <div className={styles.root}>
 
-      {/* ── Door Colour ─────────────────────────────────────────────── */}
+      {/* ── Section 1: Global melamine colour ───────────────────────── */}
       <div className={styles.section}>
-        <p className={styles.sectionTitle}>Door Colour</p>
-        <p className={styles.sectionSubtitle}>
-          Applies to all {doorCount} doors
-          {!colourRequired && (
-            <span className={styles.sectionSubtitleOptional}> — optional, all doors have inserts</span>
-          )}
-        </p>
-        <div className={styles.swatchGrid} role="radiogroup" aria-label="Select door colour">
+        <div className={styles.sectionHeader}>
+          <p className={styles.sectionTitle}>Door Colour</p>
+          <p className={styles.sectionSubtitle}>
+            {allDoorsHaveInsert
+              ? 'Not required — all doors are configured.'
+              : 'Applies to all non-configured doors.'}
+          </p>
+        </div>
+
+        <div className={styles.swatchRow} role="radiogroup" aria-label="Door colour">
           {colours.map((colour) => (
             <ColourSwatch
               key={colour.id}
               colour={colour}
-              isSelected={state.wardrobeDoorMelamineColourId === colour.id}
+              isSelected={globalColourId === colour.id}
+              disabled={allDoorsHaveInsert}
               onSelect={handleColourSelect}
             />
           ))}
@@ -225,49 +312,62 @@ export default function Step4Materials({ onComplete }: Props) {
 
       <hr className={styles.divider} />
 
-      {/* ── Door Inserts ────────────────────────────────────────────── */}
+      {/* ── Section 2: Per-door inserts ─────────────────────────────── */}
       <div className={styles.section}>
-        <p className={styles.sectionTitle}>Door Inserts</p>
-        <p className={styles.sectionSubtitle}>Optionally add an insert to each door</p>
+        <div className={styles.sectionHeader}>
+          <p className={styles.sectionTitle}>Door Configuration</p>
+          <p className={styles.sectionSubtitle}>
+            Configure your door individually by selecting the available options.
+          </p>
+        </div>
 
         {Array.from({ length: doorCount }, (_, doorIndex) => {
-          const selectedInsertId =
-            state.wardrobeDoorConfigurations.find((d) => d.doorIndex === doorIndex)?.insertId ?? null;
+          const doorCfg          = state.wardrobeDoorConfigurations.find((d) => d.doorIndex === doorIndex);
+          const selectedInsertId = doorCfg?.insertId ?? null;
+          const selectedInsert   = inserts.find((ins) => ins.id === selectedInsertId) ?? null;
+          const isIncomplete     = selectedInsertId === null && globalColourId === null;
 
           return (
             <div key={doorIndex} className={styles.doorBlock}>
-              <p className={styles.doorLabel}>Door {doorIndex + 1}</p>
-              <div className={styles.insertGrid} role="radiogroup" aria-label={`Insert for door ${doorIndex + 1}`}>
-                <InsertCard
-                  insert={null}
-                  isSelected={selectedInsertId === null}
-                  onSelect={(id) => handleInsertSelect(doorIndex, id)}
-                />
+
+              {/* Indicator — shows current state of this door */}
+              <DoorIndicator
+                doorIndex={doorIndex}
+                globalColour={globalColour}
+                selectedInsert={selectedInsert}
+                isIncomplete={isIncomplete}
+              />
+
+              {/* Insert options */}
+              <div className={styles.optionGrid} role="radiogroup" aria-label={`Insert for door ${doorIndex + 1}`}>
                 {inserts.map((insert) => (
                   <InsertCard
                     key={insert.id}
                     insert={insert}
                     isSelected={selectedInsertId === insert.id}
-                    onSelect={(id) => handleInsertSelect(doorIndex, id)}
+                    onSelect={() => handleInsertSelect(doorIndex, insert.id)}
                   />
                 ))}
               </div>
+
+              {/* Deselect hint — only shown when an insert is active */}
+              {selectedInsertId !== null && (
+                <p className={styles.deselectHint}>
+                  Click an option to select or deselect it.
+                </p>
+              )}
+
             </div>
           );
         })}
       </div>
 
       <div className={styles.actions}>
-        <Button
-          variant="primary"
-          size="md"
-          fullWidth
-          disabled={!canContinue}
-          onClick={handleContinue}
-        >
+        <Button variant="primary" size="md" fullWidth disabled={!canContinue} onClick={handleContinue}>
           Continue
         </Button>
       </div>
+
     </div>
   );
 }

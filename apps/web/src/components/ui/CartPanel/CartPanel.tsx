@@ -7,12 +7,13 @@ import styles from './CartPanel.module.css';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatPrice(cents: number): string {
+// Pricing returns dollars directly — no divide by 100
+function formatPrice(dollars: number): string {
   return new Intl.NumberFormat('en-AU', {
     style: 'currency',
     currency: 'AUD',
     minimumFractionDigits: 2,
-  }).format(cents / 100);
+  }).format(dollars);
 }
 
 function formatDate(timestamp: number): string {
@@ -50,6 +51,7 @@ const CartItemAccordion = React.memo(function CartItemAccordion({
     wardrobeStilesAndTracksId,
     wardrobeDoorConfigurations,
     wardrobeSelectedExtras,
+    wardrobeTrackLengthMm,
   } = wardrobeSnapshot;
 
   const handleDecrement = useCallback(() => {
@@ -77,19 +79,21 @@ const CartItemAccordion = React.memo(function CartItemAccordion({
   if (wardrobeDoorCount) {
     configRows.push({ label: 'Doors', value: `${wardrobeDoorCount}` });
   }
+  // Global melamine colour
   if (wardrobeDoorMelamineColourId) {
     configRows.push({
-      label: 'Colour',
+      label: 'Door Colour',
       value: wardrobeDoorMelamineColourId.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
     });
   }
-  wardrobeDoorConfigurations.forEach((door, i) => {
-    configRows.push({
-      label: `Door ${i + 1}`,
-      value: door.insertId
-        ? door.insertId.replace('insert-', '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
-        : 'No insert',
-    });
+  // Per-door inserts only (no melamineColourId on door config anymore)
+  wardrobeDoorConfigurations.forEach((door) => {
+    if (door.insertId) {
+      configRows.push({
+        label: `Door ${door.doorIndex + 1}`,
+        value: door.insertId.replace('insert-', '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+      });
+    }
   });
   if (wardrobeStilesAndTracksId) {
     configRows.push({
@@ -97,12 +101,18 @@ const CartItemAccordion = React.memo(function CartItemAccordion({
       value: wardrobeStilesAndTracksId.replace('stiles-tracks-', '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
     });
   }
+  // Tracks with length
   Object.entries(wardrobeSelectedExtras).forEach(([extraId, qty]) => {
-    if (qty > 0) {
-      configRows.push({
-        label: extraId.replace('extra-', '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-        value: `× ${qty}`,
-      });
+    if (qty <= 0) return;
+    const label = extraId.replace('extra-', '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    if (extraId === 'extra-top-track') {
+      const mm = wardrobeTrackLengthMm?.top;
+      configRows.push({ label, value: mm != null ? `${mm}mm × ${qty}` : `× ${qty}` });
+    } else if (extraId === 'extra-bottom-track') {
+      const mm = wardrobeTrackLengthMm?.bottom;
+      configRows.push({ label, value: mm != null ? `${mm}mm × ${qty}` : `× ${qty}` });
+    } else {
+      configRows.push({ label, value: `× ${qty}` });
     }
   });
   if (reference) {
@@ -115,7 +125,7 @@ const CartItemAccordion = React.memo(function CartItemAccordion({
       {/* ── Collapsed header ──────────────────────────────────────── */}
       <button
         type="button"
-        className={styles.cartItemHeader}
+        className={`${styles.cartItemHeader}${isExpanded ? ` ${styles.cartItemHeaderOpen}` : ''}`}
         onClick={() => setIsExpanded((p) => !p)}
         aria-expanded={isExpanded}
       >
@@ -156,20 +166,14 @@ const CartItemAccordion = React.memo(function CartItemAccordion({
             onClick={handleDecrement}
             disabled={quantity <= 1}
             aria-label="Decrease quantity"
-          >
-            −
-          </button>
-          <span className={styles.quantityValue} aria-live="polite">
-            {quantity}
-          </span>
+          >−</button>
+          <span className={styles.quantityValue} aria-live="polite">{quantity}</span>
           <button
             type="button"
             className={styles.quantityButton}
             onClick={handleIncrement}
             aria-label="Increase quantity"
-          >
-            +
-          </button>
+          >+</button>
         </div>
 
         <span className={styles.cartItemPrice}>
@@ -216,6 +220,7 @@ function CartPanel() {
     updateQuantity(id, quantity);
   }, [updateQuantity]);
 
+  // total is already in dollars
   const total = items.reduce(
     (sum, item) => sum + item.priceBreakdown.total * (item.quantity ?? 1),
     0

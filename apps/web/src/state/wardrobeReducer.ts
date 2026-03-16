@@ -1,6 +1,5 @@
 import type {
   WardrobeConfiguratorState,
-  WardrobeUIState,
   WardrobeTypeId,
   WardrobeDimensions,
 } from "@/domain/models/slidingDoorConfig";
@@ -17,11 +16,9 @@ export type WardrobeAction =
   | { type: "SET_DOOR_INSERT"; payload: { doorIndex: number; insertId: string | null } }
   | { type: "SET_STILES_AND_TRACKS"; payload: string }
   | { type: "SET_EXTRA_QUANTITY"; payload: { extraId: string; quantity: number } }
+  | { type: "SET_TRACK_LENGTH"; payload: { track: "top" | "bottom"; lengthMm: number | null } }
   | { type: "SET_COMPLETED_STEP"; payload: number }
   | { type: "RESET" };
-
-export type WardrobeUIAction =
-  | { type: "SET_ROOM_COLOUR"; payload: string };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -31,13 +28,14 @@ const buildDefaultDoorConfigurations = (doorCount: number) =>
     insertId: null,
   }));
 
-// ─── Configurator Reducer ─────────────────────────────────────────────────────
+// ─── Reducer ──────────────────────────────────────────────────────────────────
 
 export const wardrobeReducer = (
   state: WardrobeConfiguratorState,
   action: WardrobeAction
 ): WardrobeConfiguratorState => {
   switch (action.type) {
+
     case "SET_WARDROBE_TYPE":
       return { ...state, wardrobeTypeId: action.payload };
 
@@ -60,18 +58,27 @@ export const wardrobeReducer = (
       };
     }
 
+    // Global melamine colour — stored on root, applies to all doors that have no insert
     case "SET_MELAMINE_COLOUR":
-      return { ...state, wardrobeDoorMelamineColourId: action.payload };
+      return {
+        ...state,
+        wardrobeDoorMelamineColourId: action.payload,
+      };
 
     case "CLEAR_MELAMINE_COLOUR":
-      return { ...state, wardrobeDoorMelamineColourId: null };
+      return {
+        ...state,
+        wardrobeDoorMelamineColourId: null,
+      };
 
+    // Per-door insert — setting an insert replaces melamine on that door
+    // Setting null clears the insert (door falls back to global melamine)
     case "SET_DOOR_INSERT": {
       const { doorIndex, insertId } = action.payload;
       return {
         ...state,
-        wardrobeDoorConfigurations: state.wardrobeDoorConfigurations.map(
-          (door) => door.doorIndex === doorIndex ? { ...door, insertId } : door
+        wardrobeDoorConfigurations: state.wardrobeDoorConfigurations.map((door) =>
+          door.doorIndex === doorIndex ? { ...door, insertId } : door
         ),
       };
     }
@@ -90,6 +97,17 @@ export const wardrobeReducer = (
       return { ...state, wardrobeSelectedExtras: updated };
     }
 
+    case "SET_TRACK_LENGTH": {
+      const { track, lengthMm } = action.payload;
+      return {
+        ...state,
+        wardrobeTrackLengthMm: {
+          ...state.wardrobeTrackLengthMm,
+          [track]: lengthMm,
+        },
+      };
+    }
+
     case "SET_COMPLETED_STEP":
       return {
         ...state,
@@ -102,20 +120,6 @@ export const wardrobeReducer = (
     case "RESET":
       return createInitialWardrobeState();
 
-    default:
-      return state;
-  }
-};
-
-// ─── UI Reducer ───────────────────────────────────────────────────────────────
-
-export const wardrobeUIReducer = (
-  state: WardrobeUIState,
-  action: WardrobeUIAction
-): WardrobeUIState => {
-  switch (action.type) {
-    case "SET_ROOM_COLOUR":
-      return { ...state, roomColour: action.payload };
     default:
       return state;
   }

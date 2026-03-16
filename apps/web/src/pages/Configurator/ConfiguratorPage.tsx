@@ -1,6 +1,5 @@
 import React, { lazy, useCallback, useMemo, useState } from 'react';
 import ConfiguratorAccordion from '@/pages/Configurator/components/ConfiguratorAccordion/ConfiguratorAccordion';
-import WardrobePreview from '@/pages/Configurator/components/WardrobePreview/WardrobePreview';
 import { useWardrobeState } from '@/state/useWardrobeContext';
 import { useCart } from '@/state/useCartAuth';
 import styles from './ConfiguratorPage.module.css';
@@ -20,7 +19,7 @@ function ConfiguratorPage() {
   const { state: wardrobeState } = useWardrobeState();
   const { openCart } = useCart();
 
-  const [activeStep, setActiveStep]       = useState<number>(1);
+  const [activeStep,     setActiveStep]     = useState<number>(1);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
   // ── Step navigation ────────────────────────────────────────────────
@@ -35,12 +34,9 @@ function ConfiguratorPage() {
       next.add(stepNumber);
       return next;
     });
-    if (stepNumber < 6) {
-      setActiveStep(stepNumber + 1);
-    }
+    if (stepNumber < 6) setActiveStep(stepNumber + 1);
   }, []);
 
-  // ── Reset accordion state after add to cart ────────────────────────
   const handleAddToCart = useCallback(() => {
     setActiveStep(1);
     setCompletedSteps(new Set());
@@ -60,12 +56,7 @@ function ConfiguratorPage() {
       3: <Step3DoorCount    onComplete={() => handleStepComplete(3)} />,
       4: <Step4Materials    onComplete={() => handleStepComplete(4)} />,
       5: <Step5StilesExtras onComplete={() => handleStepComplete(5)} />,
-      6: (
-        <Step6Summary
-          onAddToCart={handleAddToCart}
-          onQuote={handleQuote}
-        />
-      ),
+      6: <Step6Summary onAddToCart={handleAddToCart} onQuote={handleQuote} />,
     }),
     [handleStepComplete, handleAddToCart, handleQuote]
   );
@@ -74,44 +65,76 @@ function ConfiguratorPage() {
 
   const stepSummaries = useMemo<Partial<Record<number, string>>>(() => {
     const s: Partial<Record<number, string>> = {};
+
     if (wardrobeState.wardrobeTypeId) {
       s[1] = wardrobeState.wardrobeTypeId
         .replace(/_/g, ' ')
         .toLowerCase()
         .replace(/\b\w/g, (c) => c.toUpperCase());
     }
+
     if (wardrobeState.wardrobeDimensions) {
       const { widthMm, heightMm } = wardrobeState.wardrobeDimensions;
-      s[2] = `${widthMm}mm × ${heightMm}mm`;
+      s[2] = `${heightMm}mm × ${widthMm}mm`;
     }
+
     if (wardrobeState.wardrobeDoorCount) {
       s[3] = `${wardrobeState.wardrobeDoorCount} doors`;
     }
-    if (wardrobeState.wardrobeDoorMelamineColourId) {
-      s[4] = wardrobeState.wardrobeDoorMelamineColourId;
+
+    // Step 4 — count doors with insert OR rely on global colour
+    const doorCount = wardrobeState.wardrobeDoorCount ?? 0;
+    const hasGlobalColour = wardrobeState.wardrobeDoorMelamineColourId !== null;
+    if (doorCount > 0 && (hasGlobalColour || wardrobeState.wardrobeDoorConfigurations.length > 0)) {
+      const doorsWithInsert = wardrobeState.wardrobeDoorConfigurations.filter(
+        (d) => d.insertId !== null
+      ).length;
+
+      if (hasGlobalColour && doorsWithInsert === 0) {
+        s[4] = `${doorCount} door${doorCount === 1 ? '' : 's'} configured`;
+      } else if (doorsWithInsert > 0) {
+        s[4] = hasGlobalColour
+          ? `Colour + ${doorsWithInsert} insert${doorsWithInsert === 1 ? '' : 's'}`
+          : doorsWithInsert === doorCount
+            ? `${doorCount} insert${doorCount === 1 ? '' : 's'}`
+            : `${doorsWithInsert} of ${doorCount} doors with insert`;
+      }
     }
+
     if (wardrobeState.wardrobeStilesAndTracksId) {
-      s[5] = wardrobeState.wardrobeStilesAndTracksId;
+      s[5] = wardrobeState.wardrobeStilesAndTracksId
+        .replace('stiles-tracks-', '')
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, (c) => c.toUpperCase());
     }
+
     return s;
   }, [wardrobeState]);
 
   return (
     <div className={styles.page}>
-      <aside className={styles.sidebar}>
-        <ConfiguratorAccordion
-          activeStep={activeStep}
-          completedSteps={completedSteps}
-          totalPrice={0}
-          onStepToggle={handleStepToggle}
-          onCheckout={() => alert('Proceeding to checkout…')}
-          onQuote={handleQuote}
-          stepContent={stepContent}
-          stepSummaries={stepSummaries}
-        />
-      </aside>
-      <div className={styles.preview}>
-        <WardrobePreview />
+      <div className={styles.content}>
+
+        {/* ── Page header ─────────────────────────────────────────── */}
+        <div className={styles.pageHeader}>
+          <h1 className={styles.pageTitle}>Configure Your Wardrobe Sliding Door</h1>
+          <p className={styles.pageSubtitle}>
+            Work through each step to build your perfect wardrobe sliding door.
+          </p>
+        </div>
+
+        {/* ── Accordion ───────────────────────────────────────────── */}
+        <div className={styles.accordionWrap}>
+          <ConfiguratorAccordion
+            activeStep={activeStep}
+            completedSteps={completedSteps}
+            totalPrice={0}
+            onStepToggle={handleStepToggle}
+            stepContent={stepContent}
+            stepSummaries={stepSummaries}
+          />
+        </div>
+
       </div>
     </div>
   );

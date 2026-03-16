@@ -23,8 +23,9 @@ export interface PricingCatalogue {
 const zeroPriceBreakdown: PriceBreakdown = {
   basePrice: 0,
   wardrobeTypePrice: 0,
-  insertPrice: 0,
+  doorConfigPrice: 0,
   stilesAndTracksPrice: 0,
+  trackPrice: 0,
   extrasPrice: 0,
   total: 0,
 };
@@ -35,7 +36,6 @@ export const calculateWardrobePrice = (
   state: WardrobeConfiguratorState,
   catalogue: PricingCatalogue
 ): PriceBreakdown => {
-
   if (
     !state.wardrobeTypeId ||
     !state.wardrobeSelectedRangeId ||
@@ -44,17 +44,21 @@ export const calculateWardrobePrice = (
     return zeroPriceBreakdown;
   }
 
+  // ── Base price: range × door count ──────────────────────────────────
   const range = catalogue.widthRanges.find(
     (r) => r.id === state.wardrobeSelectedRangeId
   );
-  const basePrice = range?.basePrice ?? 0;
+  const basePrice = range?.doorCountPrices[state.wardrobeDoorCount] ?? 0;
 
+  // ── Wardrobe type price (reserved, currently 0) ──────────────────────
   const wardrobeType = catalogue.wardrobeTypes.find(
     (t) => t.id === state.wardrobeTypeId
   );
   const wardrobeTypePrice = wardrobeType?.price ?? 0;
 
-  const insertPrice = state.wardrobeDoorConfigurations.reduce(
+  // ── Door config price: inserts × price per door ──────────────────────
+  // Doors with no insert use the global melamine colour (free).
+  const doorConfigPrice = state.wardrobeDoorConfigurations.reduce(
     (sum, door) => {
       if (!door.insertId) return sum;
       const insert = catalogue.doorInserts.find((i) => i.id === door.insertId);
@@ -63,13 +67,19 @@ export const calculateWardrobePrice = (
     0
   );
 
+  // ── Stiles & tracks price (reserved, currently 0) ───────────────────
   const stilesAndTracks = catalogue.stilesAndTracks.find(
     (s) => s.id === state.wardrobeStilesAndTracksId
   );
   const stilesAndTracksPrice = stilesAndTracks?.price ?? 0;
 
+  // ── Track price: always 0 — tracks are included ─────────────────────
+  const trackPrice = 0;
+
+  // ── Extras price: unit price × quantity (excludes top/bottom track) ──
   const extrasPrice = Object.entries(state.wardrobeSelectedExtras).reduce(
     (sum, [extraId, quantity]) => {
+      if (extraId === "extra-top-track" || extraId === "extra-bottom-track") return sum;
       const extra = catalogue.extras.find((e) => e.id === extraId);
       return sum + (extra?.price ?? 0) * quantity;
     },
@@ -79,15 +89,17 @@ export const calculateWardrobePrice = (
   const total =
     basePrice +
     wardrobeTypePrice +
-    insertPrice +
+    doorConfigPrice +
     stilesAndTracksPrice +
+    trackPrice +
     extrasPrice;
 
   return {
     basePrice,
     wardrobeTypePrice,
-    insertPrice,
+    doorConfigPrice,
     stilesAndTracksPrice,
+    trackPrice,
     extrasPrice,
     total,
   };

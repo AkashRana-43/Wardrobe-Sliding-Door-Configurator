@@ -156,6 +156,10 @@
   background: var(--color-bg-subtle);
 }
 
+.cartItemHeaderOpen:hover {
+  background: none;
+}
+
 .cartItemHeader:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);

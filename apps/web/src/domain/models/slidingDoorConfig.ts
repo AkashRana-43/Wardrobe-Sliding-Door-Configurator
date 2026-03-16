@@ -39,7 +39,7 @@ export interface WardrobeWidthRange {
   minWidthMm: number;
   maxWidthMm: number;
   allowedDoorCounts: number[];
-  basePrice: number;
+  doorCountPrices: Record<number, number>; 
 }
 
 // ─── Melamine Colours ─────────────────────────────────────────────────────────
@@ -56,7 +56,7 @@ export interface WardrobeDoorMelamineColour {
 export interface WardrobeDoorInsert {
   id: string;
   name: string;
-  price: number;
+  price: number; // per door
   image: string;
 }
 
@@ -73,50 +73,45 @@ export interface WardrobeStilesAndTracks {
   id: string;
   name: string;
   colour: string;
-  price: number;
+  price: number; // reserved for future pricing
   image: string;
 }
 
 // ─── Extras ───────────────────────────────────────────────────────────────────
+// Top Track and Bottom Track are priced per metre — use pricePerMetre.
+// All other extras are priced per unit — use price.
+// image: single static image (all extras including tracks).
 
 export interface WardrobeExtra {
   id: string;
   name: string;
-  price: number;
-  images: Record<string, string>;
+  price: number;          // per unit (non-track extras)
+  pricePerMetre?: number; // per metre (top/bottom track only)
+  image: string;
   maxQuantity: number;
-  isDefault: boolean;
+  defaultQuantity?: Partial<Record<WardrobeTypeId, number>>;
+}
+
+// ─── Track Lengths ────────────────────────────────────────────────────────────
+
+export interface WardrobeTrackLengthMm {
+  top: number | null;
+  bottom: number | null;
 }
 
 // ─── Configurator State ───────────────────────────────────────────────────────
 
 export interface WardrobeConfiguratorState {
-  // Step 1
   wardrobeTypeId: WardrobeTypeId | null;
-
-  // Step 2
   wardrobeDimensions: WardrobeDimensions | null;
-
-  // Step 3
   wardrobeSelectedRangeId: string | null;
   wardrobeDoorCount: number | null;
-
-  // Step 4
-  wardrobeDoorMelamineColourId: string | null;
+  wardrobeDoorMelamineColourId: string | null;      // global colour applied to all doors
   wardrobeDoorConfigurations: WardrobeDoorConfiguration[];
-
-  // Step 5
   wardrobeStilesAndTracksId: string | null;
-  wardrobeSelectedExtras: Record<string, number>;
-
-  // Final
+  wardrobeSelectedExtras: Record<string, number>;   // extraId → quantity
+  wardrobeTrackLengthMm: WardrobeTrackLengthMm;    // mm input for top/bottom track pricing
   wardrobeDoorLastCompletedStep: number;
-}
-
-// ─── UI State ─────────────────────────────────────────────────────────────────
-
-export interface WardrobeUIState {
-  roomColour: string;
 }
 
 // ─── Cart ─────────────────────────────────────────────────────────────────────
@@ -127,18 +122,20 @@ export interface CartItem {
   priceBreakdown: PriceBreakdown;
   quantity: number;
   addedAt: number;
+  reference?: string;
 }
 
 export interface PriceBreakdown {
   basePrice: number;
-  wardrobeTypePrice: number;
-  insertPrice: number;
-  stilesAndTracksPrice: number;
+  wardrobeTypePrice: number; 
+  doorConfigPrice: number; 
+  stilesAndTracksPrice: number; 
+  trackPrice: number; 
   extrasPrice: number;
   total: number;
 }
 
-// ─── Initial States ───────────────────────────────────────────────────────────
+// ─── Initial State ────────────────────────────────────────────────────────────
 
 export function createInitialWardrobeState(): WardrobeConfiguratorState {
   return {
@@ -150,12 +147,7 @@ export function createInitialWardrobeState(): WardrobeConfiguratorState {
     wardrobeDoorConfigurations: [],
     wardrobeStilesAndTracksId: null,
     wardrobeSelectedExtras: {},
+    wardrobeTrackLengthMm: { top: null, bottom: null },
     wardrobeDoorLastCompletedStep: 0,
-  };
-}
-
-export function createInitialWardrobeUIState(): WardrobeUIState {
-  return {
-    roomColour: "#ffffff",
   };
 }
