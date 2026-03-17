@@ -20,7 +20,16 @@
 **/.env
 **/.env.*
 !.env.example
+!apps/api/.env.example
 *.local
+
+# =========================
+# Strapi
+# =========================
+apps/api/.tmp/
+apps/api/.cache/
+apps/api/public/uploads/*
+!apps/api/public/uploads/.gitkeep
 
 # =========================
 # Logs
