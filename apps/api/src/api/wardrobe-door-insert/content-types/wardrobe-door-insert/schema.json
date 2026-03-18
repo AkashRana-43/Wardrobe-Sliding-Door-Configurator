@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "wardrobe_door_inserts",
+  "info": {
+    "singularName": "wardrobe-door-insert",
+    "pluralName": "wardrobe-door-inserts",
+    "displayName": "Wardrobe Door Insert"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "uid": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "price": {
+      "type": "decimal",
+      "required": true,
+      "default": 0
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

@@ -1,3 +1,9 @@
+// ─── Strapi Media ─────────────────────────────────────────────────────────────
+export interface StrapiMedia {
+  url: string;
+  alternativeText?: string;
+}
+
 // ─── Wardrobe Type ────────────────────────────────────────────────────────────
 
 export const WardrobeTypeId = {
@@ -14,7 +20,7 @@ export interface WardrobeType {
   id: WardrobeTypeId;
   name: string;
   description: string;
-  image: string;
+  image: StrapiMedia | null;
   price: number;
 }
 
@@ -47,7 +53,7 @@ export interface WardrobeWidthRange {
 export interface WardrobeDoorMelamineColour {
   id: string;
   name: string;
-  image: string;
+  image: StrapiMedia | null;
   hexPreview: string;
 }
 
@@ -56,8 +62,8 @@ export interface WardrobeDoorMelamineColour {
 export interface WardrobeDoorInsert {
   id: string;
   name: string;
-  price: number; // per door
-  image: string;
+  price: number;
+  image: StrapiMedia | null;
 }
 
 // ─── Per-Door Configuration ───────────────────────────────────────────────────
@@ -73,21 +79,18 @@ export interface WardrobeStilesAndTracks {
   id: string;
   name: string;
   colour: string;
-  price: number; // reserved for future pricing
-  image: string;
+  price: number;
+  image: StrapiMedia | null;
 }
 
 // ─── Extras ───────────────────────────────────────────────────────────────────
-// Top Track and Bottom Track are priced per metre — use pricePerMetre.
-// All other extras are priced per unit — use price.
-// image: single static image (all extras including tracks).
 
 export interface WardrobeExtra {
   id: string;
   name: string;
-  price: number;          // per unit (non-track extras)
-  pricePerMetre?: number; // per metre (top/bottom track only)
-  image: string;
+  price: number;
+  pricePerMetre?: number;
+  image: StrapiMedia | null;
   maxQuantity: number;
   defaultQuantity?: Partial<Record<WardrobeTypeId, number>>;
 }
@@ -106,11 +109,11 @@ export interface WardrobeConfiguratorState {
   wardrobeDimensions: WardrobeDimensions | null;
   wardrobeSelectedRangeId: string | null;
   wardrobeDoorCount: number | null;
-  wardrobeDoorMelamineColourId: string | null;      // global colour applied to all doors
+  wardrobeDoorMelamineColourId: string | null; 
   wardrobeDoorConfigurations: WardrobeDoorConfiguration[];
   wardrobeStilesAndTracksId: string | null;
-  wardrobeSelectedExtras: Record<string, number>;   // extraId → quantity
-  wardrobeTrackLengthMm: WardrobeTrackLengthMm;    // mm input for top/bottom track pricing
+  wardrobeSelectedExtras: Record<string, number>; 
+  wardrobeTrackLengthMm: WardrobeTrackLengthMm; 
   wardrobeDoorLastCompletedStep: number;
 }
 

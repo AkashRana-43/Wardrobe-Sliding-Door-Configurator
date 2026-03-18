@@ -32,7 +32,7 @@ const WardrobeTypeCard = React.memo(function WardrobeTypeCard({
       <div className={styles.imageWrap}>
         {!imgError ? (
           <img
-            src={type.image}
+            src={type.image?.url ?? ''}
             alt={type.name}
             className={styles.image}
             onError={() => setImgError(true)}

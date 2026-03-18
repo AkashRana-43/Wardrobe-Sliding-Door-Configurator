@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "wardrobe_types",
+  "info": {
+    "singularName": "wardrobe-type",
+    "pluralName": "wardrobe-types",
+    "displayName": "Wardrobe Type"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "uid": {
+      "type": "enumeration",
+      "enum": [
+        "WALL_TO_WALL",
+        "WALL_TO_END_PANEL",
+        "END_PANEL_TO_WALL",
+        "END_PANEL_TO_END_PANEL"
+      ],
+      "required": true,
+      "unique": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "price": {
+      "type": "decimal",
+      "required": true,
+      "default": 0
+    }
+  }
+}

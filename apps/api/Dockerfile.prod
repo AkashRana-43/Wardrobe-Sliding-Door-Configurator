@@ -1,0 +1,39 @@
+# ── Stage 1: Builder ──────────────────────────────────────────────────────────
+# Full image with dev dependencies — used only to compile TypeScript
+FROM node:20-alpine AS builder
+
+RUN apk add --no-cache vips-dev
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+# Compile TypeScript + build Strapi admin panel
+RUN npm run build
+
+# ── Stage 2: Production ───────────────────────────────────────────────────────
+# Fresh minimal image — only copies compiled output from builder
+# Dev dependencies are left behind, final image is much smaller
+FROM node:20-alpine AS production
+
+RUN apk add --no-cache vips-dev
+
+WORKDIR /app
+
+# Only production dependencies
+COPY package*.json ./
+RUN npm install --omit=dev
+
+# Copy compiled output from builder stage
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/favicon.png ./favicon.png
+
+EXPOSE 1337
+
+# start mode runs the pre-built output — no file watching
+CMD ["npm", "run", "start"]

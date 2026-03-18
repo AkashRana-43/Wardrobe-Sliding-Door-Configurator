@@ -1,18 +1,10 @@
-import type { ISlidingDoorService } from "@/services/interfaces/slidingDoorService.interface";
-import {
-  wardrobeTypes,
-  wardrobeWidthRanges,
-  wardrobeDoorMelamineColours,
-  wardrobeDoorInserts,
-  wardrobeStilesAndTracks,
-  wardrobeExtras,
-} from "@/services/mock/slidingDoorMockData";
+import { slidingDoorApiService } from "./slidingDoorApiService";
+import { slidingDoorMockService } from "./slidingDoorMockService";
 
-export const slidingDoorService: ISlidingDoorService = {
-  async getWardrobeTypes() { return wardrobeTypes; },
-  async getWardrobeWidthRanges() { return wardrobeWidthRanges; },
-  async getWardrobeDoorMelamineColours() { return wardrobeDoorMelamineColours; },
-  async getWardrobeDoorInserts() { return wardrobeDoorInserts; },
-  async getWardrobeStilesAndTracks() { return wardrobeStilesAndTracks; },
-  async getWardrobeExtras() { return wardrobeExtras; },
-};
+// Switch between real API and mock data via environment variable
+// VITE_USE_MOCK=true in .env to force mock data
+const useMock = import.meta.env.VITE_USE_MOCK === "true";
+
+export const slidingDoorService = useMock
+  ? slidingDoorMockService
+  : slidingDoorApiService;
