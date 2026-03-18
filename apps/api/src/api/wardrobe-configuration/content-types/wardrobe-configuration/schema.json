@@ -1,0 +1,68 @@
+{
+  "kind": "collectionType",
+  "collectionName": "wardrobe_configurations",
+  "info": {
+    "singularName": "wardrobe-configuration",
+    "pluralName": "wardrobe-configurations",
+    "displayName": "Wardrobe Configuration"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "wardrobeTypeId": {
+      "type": "string",
+      "required": true
+    },
+    "wardrobeDimensions": {
+      "type": "json",
+      "required": true
+    },
+    "wardrobeSelectedRangeId": {
+      "type": "string",
+      "required": true
+    },
+    "wardrobeDoorCount": {
+      "type": "integer",
+      "required": true
+    },
+    "wardrobeDoorMelamineColourId": {
+      "type": "string",
+      "required": false
+    },
+    "wardrobeDoorConfigurations": {
+      "type": "json",
+      "required": true
+    },
+    "wardrobeStilesAndTracksId": {
+      "type": "string",
+      "required": false
+    },
+    "wardrobeSelectedExtras": {
+      "type": "json",
+      "required": false
+    },
+    "wardrobeTrackLengthMm": {
+      "type": "json",
+      "required": false
+    },
+    "estimatedPrice": {
+      "type": "decimal",
+      "required": false
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["draft", "quoted", "ordered"],
+      "default": "draft",
+      "required": true
+    },
+    "sessionId": {
+      "type": "string",
+      "required": false
+    },
+    "priceBreakdown": {
+      "type": "json",
+      "required": false
+    }
+  }
+}
