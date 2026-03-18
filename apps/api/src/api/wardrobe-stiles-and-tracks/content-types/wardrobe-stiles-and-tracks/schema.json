@@ -1,0 +1,40 @@
+{
+    "kind": "collectionType",
+    "collectionName": "wardrobe_stiles_and_tracks",
+    "info": {
+        "singularName": "wardrobe-stiles-and-tracks",
+        "pluralName": "wardrobe-stiles-and-tracks-list",
+        "displayName": "Wardrobe Stiles and Tracks"
+    },
+    "options": {
+        "draftAndPublish": false
+    },
+    "attributes": {
+        "uid": {
+            "type": "string",
+            "required": true,
+            "unique": true
+        },
+        "name": {
+            "type": "string",
+            "required": true
+        },
+        "colour": {
+            "type": "string",
+            "required": true
+        },
+        "price": {
+            "type": "decimal",
+            "required": true,
+            "default": 0
+        },
+        "image": {
+            "type": "media",
+            "multiple": false,
+            "required": false,
+            "allowedTypes": [
+                "images"
+            ]
+        }
+    }
+}

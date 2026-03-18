@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "wardrobe_extras",
+  "info": {
+    "singularName": "wardrobe-extra",
+    "pluralName": "wardrobe-extras",
+    "displayName": "Wardrobe Extra"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "uid": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "price": {
+      "type": "decimal",
+      "required": true,
+      "default": 0
+    },
+    "pricePerMetre": {
+      "type": "decimal",
+      "required": false
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "maxQuantity": {
+      "type": "integer",
+      "required": true,
+      "default": 1
+    },
+    "defaultQuantity": {
+      "type": "json",
+      "required": false
+    }
+  }
+}

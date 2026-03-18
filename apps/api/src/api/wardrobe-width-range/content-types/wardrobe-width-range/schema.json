@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "wardrobe_width_ranges",
+  "info": {
+    "singularName": "wardrobe-width-range",
+    "pluralName": "wardrobe-width-ranges",
+    "displayName": "Wardrobe Width Range"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "uid": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "minWidthMm": {
+      "type": "integer",
+      "required": true
+    },
+    "maxWidthMm": {
+      "type": "integer",
+      "required": true
+    },
+    "allowedDoorCounts": {
+      "type": "json",
+      "required": true
+    },
+    "doorCountPrices": {
+      "type": "json",
+      "required": true
+    }
+  }
+}

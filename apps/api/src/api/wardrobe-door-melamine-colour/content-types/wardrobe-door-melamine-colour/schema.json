@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "wardrobe_door_melamine_colours",
+  "info": {
+    "singularName": "wardrobe-door-melamine-colour",
+    "pluralName": "wardrobe-door-melamine-colours",
+    "displayName": "Wardrobe Door Melamine Colour"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "uid": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "hexPreview": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

@@ -36,7 +36,7 @@ const StilesCard = React.memo(function StilesCard({ stiles, isSelected, onSelect
       >
         {!imgError ? (
           <img
-            src={stiles.image}
+            src={stiles.image?.url ?? ''}
             alt={stiles.colour}
             className={styles.stilesSwatchImg}
             onError={() => setImgError(true)}
@@ -63,8 +63,8 @@ const TrackDisplayRow = React.memo(function TrackDisplayRow({ extra }: TrackDisp
   return (
     <div className={`${styles.extraRow} ${styles.extraRowDisabled}`}>
       <div className={styles.extraThumb}>
-        {extra.image && !imgError ? (
-          <img src={extra.image} alt={extra.name} className={styles.extraThumbImg}
+        {extra.image?.url && !imgError ? (
+          <img src={extra.image.url} alt={extra.name} className={styles.extraThumbImg}
             onError={() => setImgError(true)} loading="lazy" />
         ) : (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -104,8 +104,8 @@ const ExtraRow = React.memo(function ExtraRow({ extra, quantity, onQuantityChang
   return (
     <div className={styles.extraRow}>
       <div className={styles.extraThumb}>
-        {extra.image && !imgError ? (
-          <img src={extra.image} alt={extra.name} className={styles.extraThumbImg}
+        {extra.image?.url && !imgError ? (
+          <img src={extra.image.url} alt={extra.name} className={styles.extraThumbImg}
             onError={() => setImgError(true)} loading="lazy" />
         ) : (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"

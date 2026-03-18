@@ -39,7 +39,7 @@ const ColourSwatch = React.memo(function ColourSwatch({
       <div className={[styles.swatch, isSelected ? styles.swatchActive : ''].filter(Boolean).join(' ')}>
         {!imgError ? (
           <img
-            src={colour.image}
+            src={colour.image?.url ?? ''}
             alt={colour.name}
             className={styles.swatchImg}
             onError={() => setImgError(true)}
@@ -78,9 +78,9 @@ const InsertCard = React.memo(function InsertCard({ insert, isSelected, onSelect
       aria-label={insert.name}
     >
       <div className={styles.optionImageWrap}>
-        {insert.image && !imgError ? (
+        {insert.image?.url && !imgError ? (
           <img
-            src={insert.image}
+            src={insert.image.url}
             alt={insert.name}
             className={styles.optionImage}
             onError={() => setImgError(true)}
@@ -112,7 +112,7 @@ const DoorIndicator = React.memo(function DoorIndicator({
   const [imgError, setImgError] = useState(false);
 
   // Insert takes priority — replaces colour on this door
-  const image = selectedInsert?.image ?? globalColour?.image ?? null;
+  const image = selectedInsert?.image?.url ?? globalColour?.image?.url ?? null;
 
   // Reset error state whenever the image source changes
   const prevImageRef = React.useRef<string | null>(null);

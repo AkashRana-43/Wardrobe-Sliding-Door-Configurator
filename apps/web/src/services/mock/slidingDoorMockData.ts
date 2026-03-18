@@ -12,28 +12,28 @@ export const wardrobeTypes: WardrobeType[] = [
     id: "WALL_TO_WALL",
     name: "Wall to Wall",
     description: "Fits between two existing walls. No end panels required.",
-    image: "/images/wardrobe-types/wall-to-wall.jpg",
+    image: { url: "/images/wardrobe-types/wall-to-wall.jpg", alternativeText: "Wall to Wall" },
     price: 0,
   },
   {
     id: "WALL_TO_END_PANEL",
     name: "Wall to End Panel",
     description: "Fixed to a wall on the left, finished with an end panel on the right.",
-    image: "/images/wardrobe-types/wall-to-end-panel.jpg",
+    image: { url: "/images/wardrobe-types/wall-to-end-panel.jpg", alternativeText: "Wall to End Panel" },
     price: 0,
   },
   {
     id: "END_PANEL_TO_WALL",
     name: "End Panel to Wall",
     description: "Finished with an end panel on the left, fixed to a wall on the right.",
-    image: "/images/wardrobe-types/end-panel-to-wall.jpg",
+    image: { url: "/images/wardrobe-types/end-panel-to-wall.jpg", alternativeText: "End Panel to Wall" },
     price: 0,
   },
   {
     id: "END_PANEL_TO_END_PANEL",
     name: "End Panel to End Panel",
     description: "End panels on both sides.",
-    image: "/images/wardrobe-types/end-panel-to-end-panel.jpg",
+    image: { url: "/images/wardrobe-types/end-panel-to-end-panel.jpg", alternativeText: "End Panel to End Panel" },
     price: 0,
   },
 ];
@@ -50,39 +50,38 @@ export const wardrobeWidthRanges: WardrobeWidthRange[] = [
 ];
 
 export const wardrobeDoorMelamineColours: WardrobeDoorMelamineColour[] = [
-  { id: "white-ash",   name: "White Ash",   image: "/images/melamine-colours/white-ash.jpg",   hexPreview: "#ebebeb" },
-  { id: "vanilla",     name: "Vanilla",     image: "/images/melamine-colours/vanilla.jpg",     hexPreview: "#f5eeda" },
-  { id: "lemon-tree",  name: "Lemon Tree",  image: "/images/melamine-colours/lemon-tree.jpg",  hexPreview: "#D4B483" },
-  { id: "ivory",       name: "Ivory",       image: "/images/melamine-colours/ivory.jpg",       hexPreview: "#f7f7f2" },
-  { id: "devine-oak",  name: "Devine Oak",  image: "/images/melamine-colours/devine-oak.jpg",  hexPreview: "#B8904A" },
-  { id: "cloud-grey",  name: "Cloud Grey",  image: "/images/melamine-colours/cloud-grey.jpg",  hexPreview: "#f2f2f2" },
-  { id: "polar-white", name: "Polar White", image: "/images/melamine-colours/polar-white.jpg", hexPreview: "#FAFAFA" },
+  { id: "white-ash",   name: "White Ash",   image: { url: "/images/melamine-colours/white-ash.jpg",   alternativeText: "White Ash" },   hexPreview: "#ebebeb" },
+  { id: "vanilla",     name: "Vanilla",     image: { url: "/images/melamine-colours/vanilla.jpg",     alternativeText: "Vanilla" },     hexPreview: "#f5eeda" },
+  { id: "lemon-tree",  name: "Lemon Tree",  image: { url: "/images/melamine-colours/lemon-tree.jpg",  alternativeText: "Lemon Tree" },  hexPreview: "#D4B483" },
+  { id: "ivory",       name: "Ivory",       image: { url: "/images/melamine-colours/ivory.jpg",       alternativeText: "Ivory" },       hexPreview: "#f7f7f2" },
+  { id: "devine-oak",  name: "Devine Oak",  image: { url: "/images/melamine-colours/devine-oak.jpg",  alternativeText: "Devine Oak" },  hexPreview: "#B8904A" },
+  { id: "cloud-grey",  name: "Cloud Grey",  image: { url: "/images/melamine-colours/cloud-grey.jpg",  alternativeText: "Cloud Grey" },  hexPreview: "#f2f2f2" },
+  { id: "polar-white", name: "Polar White", image: { url: "/images/melamine-colours/polar-white.jpg", alternativeText: "Polar White" }, hexPreview: "#FAFAFA" },
 ];
 
 export const wardrobeDoorInserts: WardrobeDoorInsert[] = [
-  { id: "insert-mirror",            name: "Mirror",            price: 118.19, image: "/images/door-inserts/mirror.jpg" },
-  { id: "insert-white-decor-glass", name: "White Decor Glass", price: 130.01, image: "/images/door-inserts/white-decor-glass.jpg" },
-  { id: "insert-black-decor-glass", name: "Black Decor Glass", price: 130.01, image: "/images/door-inserts/black-decor-glass.jpg" },
-  { id: "insert-super-white-glass", name: "Super White Glass", price: 165.47, image: "/images/door-inserts/super-white-glass.jpg" },
+  { id: "insert-mirror",            name: "Mirror",            price: 118.19, image: { url: "/images/door-inserts/mirror.jpg",            alternativeText: "Mirror" } },
+  { id: "insert-white-decor-glass", name: "White Decor Glass", price: 130.01, image: { url: "/images/door-inserts/white-decor-glass.jpg", alternativeText: "White Decor Glass" } },
+  { id: "insert-black-decor-glass", name: "Black Decor Glass", price: 130.01, image: { url: "/images/door-inserts/black-decor-glass.jpg", alternativeText: "Black Decor Glass" } },
+  { id: "insert-super-white-glass", name: "Super White Glass", price: 165.47, image: { url: "/images/door-inserts/super-white-glass.jpg", alternativeText: "Super White Glass" } },
 ];
 
 export const wardrobeStilesAndTracks: WardrobeStilesAndTracks[] = [
-  { id: "stiles-tracks-silver",      name: "Silver",      colour: "#dfdfdf", price: 0, image: "/images/stiles-and-tracks/silver.jpg" },
-  { id: "stiles-tracks-black",       name: "Black",       colour: "#000000", price: 0, image: "/images/stiles-and-tracks/black.jpg" },
-  { id: "stiles-tracks-matt-silver", name: "Matt Silver", colour: "#C0C0C0", price: 0, image: "/images/stiles-and-tracks/matt-silver.jpg" },
-  { id: "stiles-tracks-white",       name: "White",       colour: "#FAFAFA", price: 0, image: "/images/stiles-and-tracks/white.jpg" },
-  { id: "stiles-tracks-birch",       name: "Birch",       colour: "#eecda2", price: 0, image: "/images/stiles-and-tracks/birch.jpg" },
+  { id: "stiles-tracks-silver",      name: "Silver",      colour: "#dfdfdf", price: 0, image: { url: "/images/stiles-and-tracks/silver.jpg",      alternativeText: "Silver" } },
+  { id: "stiles-tracks-black",       name: "Black",       colour: "#000000", price: 0, image: { url: "/images/stiles-and-tracks/black.jpg",       alternativeText: "Black" } },
+  { id: "stiles-tracks-matt-silver", name: "Matt Silver", colour: "#C0C0C0", price: 0, image: { url: "/images/stiles-and-tracks/matt-silver.jpg", alternativeText: "Matt Silver" } },
+  { id: "stiles-tracks-white",       name: "White",       colour: "#FAFAFA", price: 0, image: { url: "/images/stiles-and-tracks/white.jpg",       alternativeText: "White" } },
+  { id: "stiles-tracks-birch",       name: "Birch",       colour: "#eecda2", price: 0, image: { url: "/images/stiles-and-tracks/birch.jpg",       alternativeText: "Birch" } },
 ];
 
 export const wardrobeExtras: WardrobeExtra[] = [
-  // ── Tracks — always included, display only ────────────────────────
   {
     id: "extra-top-track",
     name: "Top Track",
     price: 0,
     pricePerMetre: 25.97,
     maxQuantity: 1,
-    image: "/images/extras/top-track.jpg",
+    image: { url: "/images/extras/top-track.jpg", alternativeText: "Top Track" },
   },
   {
     id: "extra-bottom-track",
@@ -90,58 +89,38 @@ export const wardrobeExtras: WardrobeExtra[] = [
     price: 0,
     pricePerMetre: 17.49,
     maxQuantity: 1,
-    image: "/images/extras/bottom-track.jpg",
+    image: { url: "/images/extras/bottom-track.jpg", alternativeText: "Bottom Track" },
   },
   {
     id: "extra-wall-channel",
     name: "Wall Channel",
     price: 27.24,
     maxQuantity: 10,
-    image: "/images/extras/wall-channel.jpg",
-    defaultQuantity: {
-      WALL_TO_WALL:           2,
-      WALL_TO_END_PANEL:      1,
-      END_PANEL_TO_WALL:      1,
-      END_PANEL_TO_END_PANEL: 0,
-    },
+    image: { url: "/images/extras/wall-channel.jpg", alternativeText: "Wall Channel" },
+    defaultQuantity: { WALL_TO_WALL: 2, WALL_TO_END_PANEL: 1, END_PANEL_TO_WALL: 1, END_PANEL_TO_END_PANEL: 0 },
   },
   {
     id: "extra-end-panel",
     name: "End Panel",
     price: 90.6,
     maxQuantity: 10,
-    image: "/images/extras/end-panel.jpg",
-    defaultQuantity: {
-      WALL_TO_WALL:           0,
-      WALL_TO_END_PANEL:      1,
-      END_PANEL_TO_WALL:      1,
-      END_PANEL_TO_END_PANEL: 2,
-    },
+    image: { url: "/images/extras/end-panel.jpg", alternativeText: "End Panel" },
+    defaultQuantity: { WALL_TO_WALL: 0, WALL_TO_END_PANEL: 1, END_PANEL_TO_WALL: 1, END_PANEL_TO_END_PANEL: 2 },
   },
   {
     id: "extra-16mm-end-panel-receiving-channel",
     name: "16mm End Panel Receiving Channel",
     price: 15.79,
     maxQuantity: 10,
-    image: "/images/extras/16mm-end-panel-receiving-channel.jpg",
-    defaultQuantity: {
-      WALL_TO_WALL:           0,
-      WALL_TO_END_PANEL:      1,
-      END_PANEL_TO_WALL:      1,
-      END_PANEL_TO_END_PANEL: 2,
-    },
+    image: { url: "/images/extras/16mm-end-panel-receiving-channel.jpg", alternativeText: "16mm End Panel Receiving Channel" },
+    defaultQuantity: { WALL_TO_WALL: 0, WALL_TO_END_PANEL: 1, END_PANEL_TO_WALL: 1, END_PANEL_TO_END_PANEL: 2 },
   },
   {
     id: "extra-16mm-end-panel-return-channel",
     name: "16mm End Panel Return Channel",
     price: 39.75,
     maxQuantity: 10,
-    image: "/images/extras/16mm-end-panel-return-channel.jpg",
-    defaultQuantity: {
-      WALL_TO_WALL:           0,
-      WALL_TO_END_PANEL:      1,
-      END_PANEL_TO_WALL:      1,
-      END_PANEL_TO_END_PANEL: 2,
-    },
+    image: { url: "/images/extras/16mm-end-panel-return-channel.jpg", alternativeText: "16mm End Panel Return Channel" },
+    defaultQuantity: { WALL_TO_WALL: 0, WALL_TO_END_PANEL: 1, END_PANEL_TO_WALL: 1, END_PANEL_TO_END_PANEL: 2 },
   },
 ];
