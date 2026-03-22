@@ -4,6 +4,9 @@ export type CartAction =
   | { type: "ADD_ITEM"; payload: CartItem }
   | { type: "REMOVE_ITEM"; payload: string }
   | { type: "UPDATE_QUANTITY"; payload: { id: string; quantity: number } }
+  | { type: "UPDATE_ITEM"; payload: { id: string; item: Omit<CartItem, "id" | "addedAt" | "quantity"> } }
+  | { type: "START_EDITING"; payload: string }
+  | { type: "STOP_EDITING" }
   | { type: "OPEN_CART" }
   | { type: "CLOSE_CART" };
 
@@ -35,6 +38,22 @@ export const cartReducer = (
       };
     }
 
+    case "UPDATE_ITEM":
+      return {
+        ...state,
+        items: state.items.map((item) =>
+          item.id === action.payload.id
+            ? { ...item, ...action.payload.item }
+            : item
+        ),
+      };
+
+    case "START_EDITING":
+      return { ...state, editingItemId: action.payload };
+
+    case "STOP_EDITING":
+      return { ...state, editingItemId: null };
+
     case "OPEN_CART":
       return { ...state, isOpen: true };
 
@@ -49,4 +68,5 @@ export const cartReducer = (
 export const createInitialCartState = (): CartState => ({
   items: [],
   isOpen: false,
+  editingItemId: null,
 });

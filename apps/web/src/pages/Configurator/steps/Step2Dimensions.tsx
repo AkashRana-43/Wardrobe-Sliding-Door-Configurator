@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { useWardrobeState } from '@/state/useWardrobeContext';
+import { useCart } from '@/state/useCartAuth';
 import { useDebounce } from '@/hooks/useDebounce';
 import type { InputStatus } from '@/components/ui/Input';
 import styles from './Step2Dimensions.module.css';
@@ -44,10 +45,27 @@ interface FormProps {
 }
 
 function DimensionsForm({ initialWidth, initialHeight, onComplete }: FormProps) {
-  const { dispatch } = useWardrobeState();
+  const { state, dispatch } = useWardrobeState();
 
   const [heightRaw, setHeightRaw] = useState<string>(initialHeight);
   const [widthRaw,  setWidthRaw]  = useState<string>(initialWidth);
+
+  // Sync inputs when a new snapshot is loaded externally (switching cart items)
+  const prevInitialRef = useRef({ initialWidth, initialHeight });
+  useEffect(() => {
+    const prev = prevInitialRef.current;
+    if (
+      prev.initialWidth  !== initialWidth ||
+      prev.initialHeight !== initialHeight
+    ) {
+      prevInitialRef.current = { initialWidth, initialHeight };
+      const timer = setTimeout(() => {
+        setWidthRaw(initialWidth);
+        setHeightRaw(initialHeight);
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [initialWidth, initialHeight]);
 
   const debouncedHeight = useDebounce(heightRaw, 400);
   const debouncedWidth  = useDebounce(widthRaw,  400);
@@ -64,14 +82,44 @@ function DimensionsForm({ initialWidth, initialHeight, onComplete }: FormProps) 
     heightError === null &&
     widthError  === null;
 
+  // ── Immediately update validity flag based on raw inputs (no debounce)
+  //    so Update Cart disables the moment a field is cleared ────────────
+  const isRawValid =
+    heightRaw !== '' &&
+    widthRaw  !== '' &&
+    !validateHeight(parseFloat(heightRaw)) &&
+    !validateWidth(parseFloat(widthRaw));
+
   useEffect(() => {
-    if (isValid) {
-      dispatch({
-        type: 'SET_DIMENSIONS',
-        payload: { widthMm: widthNum, heightMm: heightNum },
-      });
+    if (isRawValid !== state.isDimensionsValid) {
+      dispatch({ type: 'SET_DIMENSIONS_VALIDITY', payload: isRawValid });
     }
-  }, [debouncedWidth, debouncedHeight, isValid, widthNum, heightNum, dispatch]);
+  }, [isRawValid, state.isDimensionsValid, dispatch]);
+
+  // ── Debounced effect — dispatches SET_DIMENSIONS only when both
+  //    fields are valid and the user has stopped typing ─────────────────
+  useEffect(() => {
+    if (!isValid) return;
+
+    // Skip if reducer already has these exact dimensions — prevents
+    // the debounce firing after LOAD_STATE and wiping door count /
+    // door configurations.
+    const existing = state.wardrobeDimensions;
+    if (existing?.widthMm === widthNum && existing?.heightMm === heightNum) return;
+
+    dispatch({
+      type: 'SET_DIMENSIONS',
+      payload: { widthMm: widthNum, heightMm: heightNum },
+    });
+  }, [debouncedWidth, debouncedHeight, isValid, widthNum, heightNum,
+      state.wardrobeDimensions, dispatch]);
+
+  // ── On unmount restore validity so next fresh session starts clean ──
+  useEffect(() => {
+    return () => {
+      dispatch({ type: 'SET_DIMENSIONS_VALIDITY', payload: true });
+    };
+  }, [dispatch]);
 
   const handleHeightChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => setHeightRaw(e.target.value),
@@ -87,6 +135,16 @@ function DimensionsForm({ initialWidth, initialHeight, onComplete }: FormProps) 
     if (isValid) onComplete();
   }, [isValid, onComplete]);
 
+  const heightHelperText =
+    !heightError && debouncedHeight && !isNaN(heightNum)
+      ? `${heightNum}mm`
+      : undefined;
+
+  const widthHelperText =
+    !widthError && debouncedWidth && !isNaN(widthNum)
+      ? `${widthNum}mm`
+      : undefined;
+
   return (
     <div className={styles.form}>
       <p className={styles.hint}>
@@ -94,7 +152,6 @@ function DimensionsForm({ initialWidth, initialHeight, onComplete }: FormProps) 
         Height up to <strong>{MAX_HEIGHT_MM}mm</strong>, width up to <strong>{MAX_WIDTH_MM}mm</strong>.
       </p>
 
-      {/* Height first, then Width — displayed as H × W throughout */}
       <div className={styles.fieldRow}>
         <Input
           label="Height"
@@ -107,7 +164,7 @@ function DimensionsForm({ initialWidth, initialHeight, onComplete }: FormProps) 
           onChange={handleHeightChange}
           status={getStatus(heightError, heightRaw)}
           errorText={heightError ?? undefined}
-          helperText={!heightError && heightRaw ? `${heightNum}mm` : undefined}
+          helperText={heightHelperText}
           placeholder="e.g. 2400"
           required
         />
@@ -122,7 +179,7 @@ function DimensionsForm({ initialWidth, initialHeight, onComplete }: FormProps) 
           onChange={handleWidthChange}
           status={getStatus(widthError, widthRaw)}
           errorText={widthError ?? undefined}
-          helperText={!widthError && widthRaw ? `${widthNum}mm` : undefined}
+          helperText={widthHelperText}
           placeholder="e.g. 2400"
           required
         />
@@ -151,11 +208,12 @@ interface Props {
 
 export default function Step2Dimensions({ onComplete }: Props) {
   const { state } = useWardrobeState();
+  const { cartState } = useCart();
 
   const initialWidth  = state.wardrobeDimensions?.widthMm.toString()  ?? '';
   const initialHeight = state.wardrobeDimensions?.heightMm.toString() ?? '';
-
-  const formKey = state.wardrobeDimensions === null ? 'empty' : 'filled';
+  const formKey = cartState.editingItemId
+    ?? (state.wardrobeDimensions === null ? 'empty' : 'filled');
 
   return (
     <DimensionsForm

@@ -10,18 +10,18 @@ export const CartAuthProvider = ({ children }: { children: ReactNode }) => {
     undefined,
     createInitialAuthState
   );
+
   const [cartState, cartDispatch] = useReducer(
     cartReducer,
     undefined,
     createInitialCartState
   );
 
-  // ─── Auth Actions ─────────────────────────────────────────────────────────
+  // ─── Auth Actions ───────────────────────────────────────────────────────────
   const login  = useCallback(() => authDispatch({ type: "LOGIN" }),  [authDispatch]);
   const logout = useCallback(() => authDispatch({ type: "LOGOUT" }), [authDispatch]);
 
-  // ─── Cart Actions ─────────────────────────────────────────────────────────
-  // cartDispatch is stable — safe to include in deps
+  // ─── Cart Actions ───────────────────────────────────────────────────────────
   const addToCart = useCallback(
     (item: Omit<CartItem, "id" | "addedAt" | "quantity">) => {
       cartDispatch({
@@ -34,7 +34,7 @@ export const CartAuthProvider = ({ children }: { children: ReactNode }) => {
         },
       });
     },
-    [cartDispatch]  // was [] — stale closure bug fixed
+    [cartDispatch]
   );
 
   const removeFromCart = useCallback(
@@ -48,18 +48,44 @@ export const CartAuthProvider = ({ children }: { children: ReactNode }) => {
     [cartDispatch]
   );
 
+  const updateItem = useCallback(
+    (id: string, item: Omit<CartItem, "id" | "addedAt" | "quantity">) =>
+      cartDispatch({ type: "UPDATE_ITEM", payload: { id, item } }),
+    [cartDispatch]
+  );
+
+  const startEditing = useCallback(
+    (id: string) => cartDispatch({ type: "START_EDITING", payload: id }),
+    [cartDispatch]
+  );
+
+  const stopEditing = useCallback(
+    () => cartDispatch({ type: "STOP_EDITING" }),
+    [cartDispatch]
+  );
+
   const openCart  = useCallback(() => cartDispatch({ type: "OPEN_CART" }),  [cartDispatch]);
   const closeCart = useCallback(() => cartDispatch({ type: "CLOSE_CART" }), [cartDispatch]);
 
-  // ─── Memoised Context Values ──────────────────────────────────────────────
+  // ─── Memoised Context Values ────────────────────────────────────────────────
   const authValue = useMemo(
     () => ({ authState, login, logout }),
     [authState, login, logout]
   );
 
   const cartValue = useMemo(
-    () => ({ cartState, addToCart, removeFromCart, updateQuantity, openCart, closeCart }),
-    [cartState, addToCart, removeFromCart, updateQuantity, openCart, closeCart]
+    () => ({
+      cartState,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      updateItem,
+      startEditing,
+      stopEditing,
+      openCart,
+      closeCart,
+    }),
+    [cartState, addToCart, removeFromCart, updateQuantity, updateItem, startEditing, stopEditing, openCart, closeCart]
   );
 
   return (

@@ -111,10 +111,8 @@ const DoorIndicator = React.memo(function DoorIndicator({
 }: DoorIndicatorProps) {
   const [imgError, setImgError] = useState(false);
 
-  // Insert takes priority — replaces colour on this door
   const image = selectedInsert?.image?.url ?? globalColour?.image?.url ?? null;
 
-  // Reset error state whenever the image source changes
   const prevImageRef = React.useRef<string | null>(null);
   if (prevImageRef.current !== image) {
     prevImageRef.current = image;
@@ -231,7 +229,6 @@ export default function Step4Materials({ onComplete }: Props) {
   const globalColourId = state.wardrobeDoorMelamineColourId;
   const globalColour   = colours.find((c) => c.id === globalColourId) ?? null;
 
-  // All doors have an insert → melamine colour section is disabled + cleared
   const allDoorsHaveInsert =
     doorCount > 0 &&
     Array.from({ length: doorCount }, (_, i) => i).every((i) => {
@@ -239,7 +236,6 @@ export default function Step4Materials({ onComplete }: Props) {
       return cfg?.insertId != null;
     });
 
-  // Every door must have either a global melamine OR a per-door insert
   const canContinue =
     doorCount > 0 &&
     Array.from({ length: doorCount }, (_, i) => i).every((i) => {
@@ -247,21 +243,17 @@ export default function Step4Materials({ onComplete }: Props) {
       return cfg?.insertId != null || globalColourId != null;
     });
 
-  // ── Global melamine colour selection ───────────────────────────────
   const handleColourSelect = useCallback((colourId: string) => {
     dispatch({ type: 'SET_MELAMINE_COLOUR', payload: colourId });
   }, [dispatch]);
 
-  // ── Per-door insert toggle ─────────────────────────────────────────
   const handleInsertSelect = useCallback((doorIndex: number, insertId: string) => {
     const currentInsertId = state.wardrobeDoorConfigurations
       .find((d) => d.doorIndex === doorIndex)?.insertId ?? null;
 
-    // Clicking the active insert deselects it
     const nextInsertId = currentInsertId === insertId ? null : insertId;
     dispatch({ type: 'SET_DOOR_INSERT', payload: { doorIndex, insertId: nextInsertId } });
 
-    // If all doors will now have inserts → clear global melamine colour
     if (nextInsertId !== null) {
       const updatedConfigs = state.wardrobeDoorConfigurations.map((d) =>
         d.doorIndex === doorIndex ? { ...d, insertId: nextInsertId } : d
@@ -329,16 +321,12 @@ export default function Step4Materials({ onComplete }: Props) {
 
           return (
             <div key={doorIndex} className={styles.doorBlock}>
-
-              {/* Indicator — shows current state of this door */}
               <DoorIndicator
                 doorIndex={doorIndex}
                 globalColour={globalColour}
                 selectedInsert={selectedInsert}
                 isIncomplete={isIncomplete}
               />
-
-              {/* Insert options */}
               <div className={styles.optionGrid} role="radiogroup" aria-label={`Insert for door ${doorIndex + 1}`}>
                 {inserts.map((insert) => (
                   <InsertCard
@@ -349,14 +337,11 @@ export default function Step4Materials({ onComplete }: Props) {
                   />
                 ))}
               </div>
-
-              {/* Deselect hint — only shown when an insert is active */}
               {selectedInsertId !== null && (
                 <p className={styles.deselectHint}>
                   Click an option to select or deselect it.
                 </p>
               )}
-
             </div>
           );
         })}

@@ -7,7 +7,6 @@ import styles from './CartPanel.module.css';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-// Pricing returns dollars directly — no divide by 100
 function formatPrice(dollars: number): string {
   return new Intl.NumberFormat('en-AU', {
     style: 'currency',
@@ -32,16 +31,21 @@ function scalePrice(breakdown: PriceBreakdown, quantity: number): number {
 
 interface CartItemAccordionProps {
   item: CartItem;
+  isExpanded: boolean;
+  onToggle: (id: string) => void;
   onRemove: (id: string) => void;
   onQuantityChange: (id: string, quantity: number) => void;
+  onEdit: (id: string) => void;
 }
 
 const CartItemAccordion = React.memo(function CartItemAccordion({
   item,
+  isExpanded,
+  onToggle,
   onRemove,
   onQuantityChange,
+  onEdit,
 }: CartItemAccordionProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const { wardrobeSnapshot, priceBreakdown, addedAt, id, quantity, reference } = item;
   const {
     wardrobeDimensions,
@@ -63,48 +67,67 @@ const CartItemAccordion = React.memo(function CartItemAccordion({
   }, [id, quantity, onQuantityChange]);
 
   const handleRemove = useCallback(() => onRemove(id), [id, onRemove]);
+  const handleEdit = useCallback(() => onEdit(id), [id, onEdit]);
 
   const typeLabel = wardrobeTypeId ? formatWardrobeType(wardrobeTypeId) : 'Wardrobe';
-  const dimLabel  = wardrobeDimensions
+  const dimLabel = wardrobeDimensions
     ? `${wardrobeDimensions.widthMm} × ${wardrobeDimensions.heightMm}mm`
     : null;
 
-  // Build config rows for accordion body
   const configRows: { label: string; value: string }[] = [];
 
   if (wardrobeDimensions) {
-    configRows.push({ label: 'Width',  value: `${wardrobeDimensions.widthMm}mm` });
+    configRows.push({ label: 'Width', value: `${wardrobeDimensions.widthMm}mm` });
     configRows.push({ label: 'Height', value: `${wardrobeDimensions.heightMm}mm` });
   }
   if (wardrobeDoorCount) {
     configRows.push({ label: 'Doors', value: `${wardrobeDoorCount}` });
   }
-  // Global melamine colour
-  if (wardrobeDoorMelamineColourId) {
+
+  // Only show Door Colour if not all doors have inserts
+  const allDoorsHaveInsert =
+    wardrobeDoorConfigurations.length > 0 &&
+    wardrobeDoorConfigurations.every((d) => d.insertId !== null);
+
+  if (wardrobeDoorMelamineColourId && !allDoorsHaveInsert) {
     configRows.push({
       label: 'Door Colour',
-      value: wardrobeDoorMelamineColourId.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+      value: wardrobeDoorMelamineColourId
+        .replace(/^colour-/, '')
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, (c) => c.toUpperCase()),
     });
   }
-  // Per-door inserts only (no melamineColourId on door config anymore)
+
   wardrobeDoorConfigurations.forEach((door) => {
     if (door.insertId) {
       configRows.push({
         label: `Door ${door.doorIndex + 1}`,
-        value: door.insertId.replace('insert-', '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+        value: door.insertId
+          .replace('insert-', '')
+          .replace(/-/g, ' ')
+          .replace(/\b\w/g, (c) => c.toUpperCase()),
       });
     }
   });
+
   if (wardrobeStilesAndTracksId) {
+    const stilesName = wardrobeStilesAndTracksId
+      .replace('stiles-tracks-', '')
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
     configRows.push({
       label: 'Stiles',
-      value: wardrobeStilesAndTracksId.replace('stiles-tracks-', '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+      value: stilesName || wardrobeStilesAndTracksId,
     });
   }
-  // Tracks with length
+
   Object.entries(wardrobeSelectedExtras).forEach(([extraId, qty]) => {
     if (qty <= 0) return;
-    const label = extraId.replace('extra-', '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    const label = extraId
+      .replace('extra-', '')
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
     if (extraId === 'extra-top-track') {
       const mm = wardrobeTrackLengthMm?.top;
       configRows.push({ label, value: mm != null ? `${mm}mm × ${qty}` : `× ${qty}` });
@@ -115,6 +138,7 @@ const CartItemAccordion = React.memo(function CartItemAccordion({
       configRows.push({ label, value: `× ${qty}` });
     }
   });
+
   if (reference) {
     configRows.push({ label: 'Reference', value: reference });
   }
@@ -122,11 +146,11 @@ const CartItemAccordion = React.memo(function CartItemAccordion({
   return (
     <article className={styles.cartItem} aria-label="Cart item">
 
-      {/* ── Collapsed header ──────────────────────────────────────── */}
+      {/* ── Header ────────────────────────────────────────────────── */}
       <button
         type="button"
         className={`${styles.cartItemHeader}${isExpanded ? ` ${styles.cartItemHeaderOpen}` : ''}`}
-        onClick={() => setIsExpanded((p) => !p)}
+        onClick={() => onToggle(id)}
         aria-expanded={isExpanded}
       >
         <div className={styles.cartItemHeaderLeft}>
@@ -140,7 +164,8 @@ const CartItemAccordion = React.memo(function CartItemAccordion({
             className={`${styles.chevron}${isExpanded ? ` ${styles.chevronOpen}` : ''}`}
             width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"
           >
-            <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5"
+              strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
       </button>
@@ -151,13 +176,15 @@ const CartItemAccordion = React.memo(function CartItemAccordion({
           {configRows.map((row) => (
             <div key={row.label} className={styles.cartItemMetaRow}>
               <span className={styles.cartItemMetaLabel}>{row.label}</span>
-              <span className={styles.cartItemMetaValue}>{row.value}</span>
+              <span className={styles.cartItemMetaValue} title={row.value}>
+                {row.value}
+              </span>
             </div>
           ))}
         </div>
       )}
 
-      {/* ── Footer: qty + price + remove ──────────────────────────── */}
+      {/* ── Footer ────────────────────────────────────────────────── */}
       <div className={styles.cartItemFooter}>
         <div className={styles.quantityControl}>
           <button
@@ -182,14 +209,32 @@ const CartItemAccordion = React.memo(function CartItemAccordion({
 
         <button
           type="button"
+          className={styles.editButton}
+          onClick={handleEdit}
+          aria-label={`Edit ${typeLabel}`}
+        >
+          <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M8.5 1.5l2 2L4 10H2v-2L8.5 1.5z"
+              stroke="currentColor" strokeWidth="1.5"
+              strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Edit
+        </button>
+
+        <button
+          type="button"
           className={styles.removeButton}
           onClick={handleRemove}
           aria-label={`Remove ${typeLabel} from cart`}
         >
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-            <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+            stroke="currentColor" strokeWidth="1.75"
+            strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+            <path d="M10 11v6M14 11v6" />
+            <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
           </svg>
-          Remove
         </button>
       </div>
 
@@ -200,9 +245,24 @@ const CartItemAccordion = React.memo(function CartItemAccordion({
 // ─── CartPanel ────────────────────────────────────────────────────────────────
 
 function CartPanel() {
-  const { cartState, closeCart, removeFromCart, updateQuantity } = useCart();
+  const { cartState, closeCart, removeFromCart, updateQuantity, startEditing } = useCart();
   const { authState } = useAuth();
   const { items, isOpen } = cartState;
+
+  // Only one item open at a time — tracked at panel level
+  const [openItemId, setOpenItemId] = useState<string | null>(null);
+
+  const handleToggle = useCallback((id: string) => {
+    setOpenItemId((prev) => (prev === id ? null : id));
+  }, []);
+
+  // Reset open item when cart closes
+  useEffect(() => {
+    if (!isOpen) {
+      const timer = setTimeout(() => setOpenItemId(null), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -220,7 +280,11 @@ function CartPanel() {
     updateQuantity(id, quantity);
   }, [updateQuantity]);
 
-  // total is already in dollars
+  const handleEdit = useCallback((id: string) => {
+    startEditing(id);
+    closeCart();
+  }, [startEditing, closeCart]);
+
   const total = items.reduce(
     (sum, item) => sum + item.priceBreakdown.total * (item.quantity ?? 1),
     0
@@ -251,9 +315,15 @@ function CartPanel() {
               </span>
             )}
           </div>
-          <button type="button" className={styles.closeButton} onClick={closeCart} aria-label="Close cart">
+          <button
+            type="button"
+            className={styles.closeButton}
+            onClick={closeCart}
+            aria-label="Close cart"
+          >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-              <path d="M1 1l16 16M17 1L1 17" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              <path d="M1 1l16 16M17 1L1 17"
+                stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
             </svg>
           </button>
         </div>
@@ -277,8 +347,11 @@ function CartPanel() {
               <CartItemAccordion
                 key={item.id}
                 item={item}
+                isExpanded={openItemId === item.id}
+                onToggle={handleToggle}
                 onRemove={removeFromCart}
                 onQuantityChange={handleQuantityChange}
+                onEdit={handleEdit}
               />
             ))
           )}
@@ -293,12 +366,14 @@ function CartPanel() {
             </div>
             <div className={styles.footerActions}>
               {authState.isLoggedIn ? (
-                <Button variant="primary" size="lg" fullWidth onClick={() => alert('Proceeding to checkout…')}>
+                <Button variant="primary" size="lg" fullWidth
+                  onClick={() => alert('Proceeding to checkout…')}>
                   Checkout
                 </Button>
               ) : (
                 <>
-                  <Button variant="primary" size="lg" fullWidth onClick={() => alert('Requesting a quote…')}>
+                  <Button variant="primary" size="lg" fullWidth
+                    onClick={() => alert('Requesting a quote…')}>
                     Ask a Quote
                   </Button>
                   <Button variant="ghost" size="md" fullWidth onClick={closeCart}>

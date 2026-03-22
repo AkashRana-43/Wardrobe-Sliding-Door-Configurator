@@ -23,6 +23,7 @@ export interface CartItem {
 export interface CartState {
   items: CartItem[];
   isOpen: boolean;
+  editingItemId: string | null;
 }
 
 // ─── Context Value Types ──────────────────────────────────────────────────────
@@ -38,6 +39,9 @@ export interface CartContextValue {
   addToCart: (item: Omit<CartItem, "id" | "addedAt" | "quantity">) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  updateItem: (id: string, item: Omit<CartItem, "id" | "addedAt" | "quantity">) => void;
+  startEditing: (id: string) => void;
+  stopEditing: () => void;
   openCart: () => void;
   closeCart: () => void;
 }

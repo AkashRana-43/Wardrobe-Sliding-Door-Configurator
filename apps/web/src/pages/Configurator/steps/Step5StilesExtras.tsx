@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { slidingDoorService } from '@/services/slidingDoorService';
 import { useWardrobeState } from '@/state/useWardrobeContext';
 import Button from '@/components/ui/Button';
@@ -24,14 +24,17 @@ const StilesCard = React.memo(function StilesCard({ stiles, isSelected, onSelect
   return (
     <button
       type="button"
-      className={styles.stilesButton}
+      className={[
+        styles.stilesButton,
+        isSelected ? styles.stilesButtonActive : '',
+      ].filter(Boolean).join(' ')}
       onClick={() => onSelect(stiles.id)}
       aria-pressed={isSelected}
       aria-label={stiles.name}
       title={stiles.name}
     >
       <span
-        className={[styles.stilesSwatch, isSelected ? styles.stilesSwatchActive : ''].filter(Boolean).join(' ')}
+        className={styles.stilesSwatch}
         style={imgError ? { backgroundColor: stiles.colour } : undefined}
       >
         {!imgError ? (
@@ -44,7 +47,10 @@ const StilesCard = React.memo(function StilesCard({ stiles, isSelected, onSelect
           />
         ) : null}
       </span>
-      <span className={[styles.stilesName, isSelected ? styles.stilesNameActive : ''].filter(Boolean).join(' ')}>
+      <span className={[
+        styles.stilesName,
+        isSelected ? styles.stilesNameActive : '',
+      ].filter(Boolean).join(' ')}>
         {stiles.name}
       </span>
     </button>
@@ -52,7 +58,6 @@ const StilesCard = React.memo(function StilesCard({ stiles, isSelected, onSelect
 });
 
 // ─── TrackDisplayRow ──────────────────────────────────────────────────────────
-// Tracks are always qty=1, included, no controls — purely informational.
 
 interface TrackDisplayRowProps {
   extra: WardrobeExtra;
@@ -167,6 +172,25 @@ export default function Step5StilesExtras({ onComplete }: Props) {
   const [isLoading, setIsLoading]         = useState(true);
   const [error, setError]                 = useState<string | null>(null);
 
+  // ── Refs to track default application ─────────────────────────────
+  const defaultsAppliedRef = useRef(false);
+  const prevTypeIdRef       = useRef<string | null>(null);
+  const prevExtrasRef       = useRef(state.wardrobeSelectedExtras);
+
+  // Reset defaults flag when wardrobe type is cleared (RESET)
+  if (prevTypeIdRef.current !== state.wardrobeTypeId) {
+    prevTypeIdRef.current = state.wardrobeTypeId ?? null;
+    if (!state.wardrobeTypeId) {
+      defaultsAppliedRef.current = false;
+    }
+  }
+
+  // Reset defaults flag when extras object is replaced wholesale (LOAD_STATE)
+  if (prevExtrasRef.current !== state.wardrobeSelectedExtras) {
+    prevExtrasRef.current = state.wardrobeSelectedExtras;
+    defaultsAppliedRef.current = false;
+  }
+
   useEffect(() => {
     let cancelled = false;
     Promise.all([
@@ -189,18 +213,32 @@ export default function Step5StilesExtras({ onComplete }: Props) {
     return () => { cancelled = true; };
   }, []);
 
-  // Apply defaults whenever extras are loaded OR typeId changes (handles lazy mount timing)
+  // ── Apply defaults only for fresh configurations, not edit loads ───
   useEffect(() => {
     if (extrasOptions.length === 0) return;
     if (!state.wardrobeTypeId) return;
+    if (defaultsAppliedRef.current) return;
+
+    const hasExistingQuantities = extrasOptions
+      .filter((e) => !TRACK_IDS.includes(e.id))
+      .some((e) => (state.wardrobeSelectedExtras[e.id] ?? 0) > 0);
+
+    if (hasExistingQuantities) {
+      defaultsAppliedRef.current = true;
+      return;
+    }
+
+    defaultsAppliedRef.current = true;
     const typeId = state.wardrobeTypeId;
+
     extrasOptions.forEach((extra) => {
       if (!extra.defaultQuantity) return;
       if (!(typeId in extra.defaultQuantity)) return;
       const qty = extra.defaultQuantity[typeId] ?? 0;
       dispatch({ type: 'SET_EXTRA_QUANTITY', payload: { extraId: extra.id, quantity: qty } });
     });
-  }, [extrasOptions, state.wardrobeTypeId]); // eslint-disable-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [extrasOptions, state.wardrobeTypeId]);
 
   const handleStilesSelect = useCallback(
     (id: string) => dispatch({ type: 'SET_STILES_AND_TRACKS', payload: id }),
@@ -232,7 +270,7 @@ export default function Step5StilesExtras({ onComplete }: Props) {
       <div className={styles.stilesSection}>
         <div className={styles.stilesLeft}>
           <p className={styles.sectionTitle}>Stiles & Tracks</p>
-          <p className={styles.sectionSubtitle}>Choose your frame finish.</p>
+          <p className={styles.sectionSubtitle}>Select a finish.</p>
           <div className={styles.stilesGrid} role="radiogroup" aria-label="Select stiles and tracks">
             {stilesOptions.map((stiles) => (
               <StilesCard
@@ -243,10 +281,8 @@ export default function Step5StilesExtras({ onComplete }: Props) {
               />
             ))}
           </div>
-
-          {/* Track included note + track display rows */}
           <p className={styles.trackIncludedNote}>
-            🛤 Top and bottom tracks are included with your order.
+            Top and bottom tracks are included with your order.
           </p>
           <div className={styles.trackDisplayList}>
             {trackExtras.map((extra) => (
@@ -263,6 +299,9 @@ export default function Step5StilesExtras({ onComplete }: Props) {
         <p className={styles.sectionTitle}>Extras</p>
         <p className={styles.sectionSubtitle}>
           Quantities are pre-filled based on your wardrobe type. Adjust as needed.
+        </p>
+        <p className={styles.trackIncludedNote}>
+          Extras will be supplied oversize, cutting to size will be required.
         </p>
         <div className={styles.extrasList}>
           {optionalExtras.map((extra) => (

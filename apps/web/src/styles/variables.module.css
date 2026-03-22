@@ -102,14 +102,14 @@
   --font-family-mono: "JetBrains Mono", "Fira Code", monospace;
 
   /* Font sizes */
-  --font-size-xs: 13px;
-  --font-size-sm: 15px;
-  --font-size-md: 16px;
-  --font-size-lg: 18px;
-  --font-size-xl: 21px;
-  --font-size-2xl: 25px;
-  --font-size-3xl: 32px;
-  --font-size-4xl: 41px;
+  --font-size-xs: 18px;
+  --font-size-sm: 20px;
+  --font-size-md: 22px;
+  --font-size-lg: 24px;
+  --font-size-xl: 26px;
+  --font-size-2xl: 32px;
+  --font-size-3xl: 40px;
+  --font-size-4xl: 42px;
 
   /* Font weights */
   --font-weight-regular: 400;

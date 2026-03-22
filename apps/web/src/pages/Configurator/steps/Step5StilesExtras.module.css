@@ -37,55 +37,80 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+  justify-content: flex-start;
 }
 
+.stilesGrid > * {
+  flex: 0 0 calc((100% - 56px) / 8);
+}
+
+@media (max-width: 700px) {
+  .stilesGrid > * {
+    flex: 0 0 calc((100% - 24px) / 4);
+  }
+}
+
+@media (max-width: 400px) {
+  .stilesGrid > * {
+    flex: 0 0 calc((100% - 16px) / 3);
+  }
+}
+
+/* Card shell — identical to optionCard / swatchButton in Step4 */
 .stilesButton {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-1);
-  background: none;
-  border: none;
+  padding: var(--space-2) var(--space-1);
+  border: 2px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-surface);
   cursor: pointer;
-  padding: 2px;
-  border-radius: var(--radius-md);
-  transition: background var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-fast),
+              box-shadow var(--transition-fast),
+              background var(--transition-fast);
+  text-align: center;
+  min-width: 0;
 }
 
 .stilesButton:hover {
-  background: var(--color-bg-subtle);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
 }
 
 .stilesButton:focus-visible {
   outline: none;
-}
-
-.stilesButton:focus-visible .stilesSwatch {
   box-shadow: var(--focus-ring);
 }
 
+.stilesButtonActive {
+  border-color: var(--color-step-active-border);
+  background: var(--color-step-active-bg);
+}
+
+.stilesButtonActive:hover {
+  border-color: var(--color-step-active-border);
+}
+
+/* Image wrap — identical to optionImageWrap */
 .stilesSwatch {
-  width: 192px;
-  height: 192px;
-  border-radius: var(--radius-swatch);
-  border: 2px solid var(--color-swatch-border);
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-skeleton);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color var(--transition-fast),
-              box-shadow var(--transition-fast),
-              transform var(--transition-fast);
-  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  border: none;
 }
 
-.stilesButton:hover .stilesSwatch {
-  transform: scale(1.05);
-}
-
+/* Active state is on the card shell now, not the swatch */
 .stilesSwatchActive {
-  border-color: var(--color-swatch-border-selected);
-  box-shadow: var(--shadow-swatch-selected);
+  border: none;
 }
 
 .stilesSwatchImg {
@@ -93,23 +118,24 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  border-radius: calc(var(--radius-swatch) - 2px);
+  border-radius: 0;
 }
 
+/* Label — identical to optionName */
 .stilesName {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-  text-align: center;
-  max-width: 192px;
+  font-size: 11px;
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
   line-height: var(--line-height-snug);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
 }
 
 .stilesNameActive {
   color: var(--color-primary-base);
-  font-weight: var(--font-weight-medium);
 }
 
 /* ── Extras list ─────────────────────────────────────────────────────── */
@@ -216,7 +242,6 @@
   text-align: center;
   padding: 0 var(--space-2);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-  /* hide browser number spinners */
   -moz-appearance: textfield;
 }
 
@@ -326,32 +351,14 @@
   gap: var(--space-3);
 }
 
-/* ── Track row wrapper (for inline error below row) ─────────────────── */
+/* ── Track row wrapper ───────────────────────────────────────────────── */
 .trackRowWrap {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
 }
 
-/* ── Track error state ───────────────────────────────────────────────── */
-.extraRowError {
-  border-color: var(--color-error-base) !important;
-  background: var(--color-error-bg) !important;
-}
-
-.trackError {
-  font-size: var(--font-size-xs);
-  color: var(--color-error-base);
-  margin: 0;
-  padding-left: var(--space-1);
-}
-
-.trackInputError {
-  border-color: var(--color-error-base) !important;
-  color: var(--color-error-base);
-}
-
-/* ── Track display list (below included note) ────────────────────────── */
+/* ── Track display list ──────────────────────────────────────────────── */
 .trackDisplayList {
   display: flex;
   flex-direction: column;
@@ -385,12 +392,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-}
-
-.stilesGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
 }
 
 /* Track included note */
@@ -437,6 +438,8 @@
   font-size: var(--font-size-xs);
   color: var(--color-error-base);
   font-weight: var(--font-weight-medium);
+  margin: 0;
+  padding-left: var(--space-1);
 }
 
 .trackInputError {

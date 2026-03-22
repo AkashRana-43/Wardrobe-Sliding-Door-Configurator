@@ -10,14 +10,28 @@ import { createInitialWardrobeState } from "@/domain/models/slidingDoorConfig";
 export type WardrobeAction =
   | { type: "SET_WARDROBE_TYPE"; payload: WardrobeTypeId }
   | { type: "SET_DIMENSIONS"; payload: WardrobeDimensions }
-  | { type: "SET_RANGE_AND_DOOR_COUNT"; payload: { rangeId: string; doorCount: number } }
+  | { type: "SET_DIMENSIONS_VALIDITY"; payload: boolean }
+  | {
+      type: "SET_RANGE_AND_DOOR_COUNT";
+      payload: { rangeId: string; doorCount: number };
+    }
   | { type: "SET_MELAMINE_COLOUR"; payload: string }
   | { type: "CLEAR_MELAMINE_COLOUR" }
-  | { type: "SET_DOOR_INSERT"; payload: { doorIndex: number; insertId: string | null } }
+  | {
+      type: "SET_DOOR_INSERT";
+      payload: { doorIndex: number; insertId: string | null };
+    }
   | { type: "SET_STILES_AND_TRACKS"; payload: string }
-  | { type: "SET_EXTRA_QUANTITY"; payload: { extraId: string; quantity: number } }
-  | { type: "SET_TRACK_LENGTH"; payload: { track: "top" | "bottom"; lengthMm: number | null } }
+  | {
+      type: "SET_EXTRA_QUANTITY";
+      payload: { extraId: string; quantity: number };
+    }
+  | {
+      type: "SET_TRACK_LENGTH";
+      payload: { track: "top" | "bottom"; lengthMm: number | null };
+    }
   | { type: "SET_COMPLETED_STEP"; payload: number }
+  | { type: "LOAD_STATE"; payload: WardrobeConfiguratorState }
   | { type: "RESET" };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -32,53 +46,57 @@ const buildDefaultDoorConfigurations = (doorCount: number) =>
 
 export const wardrobeReducer = (
   state: WardrobeConfiguratorState,
-  action: WardrobeAction
+  action: WardrobeAction,
 ): WardrobeConfiguratorState => {
   switch (action.type) {
-
     case "SET_WARDROBE_TYPE":
       return { ...state, wardrobeTypeId: action.payload };
 
     case "SET_DIMENSIONS":
+      // Also resets downstream door state since width changed
       return {
         ...state,
         wardrobeDimensions: action.payload,
+        isDimensionsValid: true,
         wardrobeSelectedRangeId: null,
         wardrobeDoorCount: null,
         wardrobeDoorConfigurations: [],
       };
 
+    // Marks Step 2 inputs as valid or invalid WITHOUT touching any other
+    // state. Step 6 reads isDimensionsValid to disable Update Cart when
+    // one or both fields are empty — without wiping door count or inserts.
+    case "SET_DIMENSIONS_VALIDITY":
+      return { ...state, isDimensionsValid: action.payload };
+
     case "SET_RANGE_AND_DOOR_COUNT": {
       const { rangeId, doorCount } = action.payload;
+      const configurationsUnchanged =
+        state.wardrobeDoorCount === doorCount &&
+        state.wardrobeDoorConfigurations.length === doorCount;
       return {
         ...state,
         wardrobeSelectedRangeId: rangeId,
         wardrobeDoorCount: doorCount,
-        wardrobeDoorConfigurations: buildDefaultDoorConfigurations(doorCount),
+        wardrobeDoorConfigurations: configurationsUnchanged
+          ? state.wardrobeDoorConfigurations
+          : buildDefaultDoorConfigurations(doorCount),
       };
     }
 
-    // Global melamine colour — stored on root, applies to all doors that have no insert
     case "SET_MELAMINE_COLOUR":
-      return {
-        ...state,
-        wardrobeDoorMelamineColourId: action.payload,
-      };
+      return { ...state, wardrobeDoorMelamineColourId: action.payload };
 
     case "CLEAR_MELAMINE_COLOUR":
-      return {
-        ...state,
-        wardrobeDoorMelamineColourId: null,
-      };
+      return { ...state, wardrobeDoorMelamineColourId: null };
 
-    // Per-door insert — setting an insert replaces melamine on that door
-    // Setting null clears the insert (door falls back to global melamine)
     case "SET_DOOR_INSERT": {
       const { doorIndex, insertId } = action.payload;
       return {
         ...state,
-        wardrobeDoorConfigurations: state.wardrobeDoorConfigurations.map((door) =>
-          door.doorIndex === doorIndex ? { ...door, insertId } : door
+        wardrobeDoorConfigurations: state.wardrobeDoorConfigurations.map(
+          (door) =>
+            door.doorIndex === doorIndex ? { ...door, insertId } : door,
         ),
       };
     }
@@ -113,9 +131,12 @@ export const wardrobeReducer = (
         ...state,
         wardrobeDoorLastCompletedStep: Math.max(
           state.wardrobeDoorLastCompletedStep,
-          action.payload
+          action.payload,
         ),
       };
+
+    case "LOAD_STATE":
+      return { ...action.payload };
 
     case "RESET":
       return createInitialWardrobeState();

@@ -45,7 +45,7 @@ export interface WardrobeWidthRange {
   minWidthMm: number;
   maxWidthMm: number;
   allowedDoorCounts: number[];
-  doorCountPrices: Record<number, number>; 
+  doorCountPrices: Record<number, number>;
 }
 
 // ─── Melamine Colours ─────────────────────────────────────────────────────────
@@ -107,13 +107,17 @@ export interface WardrobeTrackLengthMm {
 export interface WardrobeConfiguratorState {
   wardrobeTypeId: WardrobeTypeId | null;
   wardrobeDimensions: WardrobeDimensions | null;
+  // Tracks whether Step 2 inputs are currently valid.
+  // Set to false when either field is empty/invalid so Step 6
+  // disables Update Cart without wiping downstream state.
+  isDimensionsValid: boolean;
   wardrobeSelectedRangeId: string | null;
   wardrobeDoorCount: number | null;
-  wardrobeDoorMelamineColourId: string | null; 
+  wardrobeDoorMelamineColourId: string | null;
   wardrobeDoorConfigurations: WardrobeDoorConfiguration[];
   wardrobeStilesAndTracksId: string | null;
-  wardrobeSelectedExtras: Record<string, number>; 
-  wardrobeTrackLengthMm: WardrobeTrackLengthMm; 
+  wardrobeSelectedExtras: Record<string, number>;
+  wardrobeTrackLengthMm: WardrobeTrackLengthMm;
   wardrobeDoorLastCompletedStep: number;
 }
 
@@ -130,10 +134,10 @@ export interface CartItem {
 
 export interface PriceBreakdown {
   basePrice: number;
-  wardrobeTypePrice: number; 
-  doorConfigPrice: number; 
-  stilesAndTracksPrice: number; 
-  trackPrice: number; 
+  wardrobeTypePrice: number;
+  doorConfigPrice: number;
+  stilesAndTracksPrice: number;
+  trackPrice: number;
   extrasPrice: number;
   total: number;
 }
@@ -144,6 +148,7 @@ export function createInitialWardrobeState(): WardrobeConfiguratorState {
   return {
     wardrobeTypeId: null,
     wardrobeDimensions: null,
+    isDimensionsValid: true,
     wardrobeSelectedRangeId: null,
     wardrobeDoorCount: null,
     wardrobeDoorMelamineColourId: null,

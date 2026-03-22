@@ -67,7 +67,6 @@
 .optionSelected {
   border-color: var(--color-step-active-border);
   background: var(--color-step-active-bg);
-  box-shadow: var(--shadow-swatch-selected);
 }
 
 .optionNumber {
