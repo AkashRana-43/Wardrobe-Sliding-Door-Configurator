@@ -55,3 +55,10 @@ When enabled, the app fetches the same catalog entities from Strapi:
  - Skeleton loaders while fetching catalog data
  - Lazy loaded steps
  - Image lazy loading
+
+## License
+
+This project is **not open source**. It is shared publicly for portfolio/recruiter review only.
+
+You may view the code, but you may not copy, reuse, modify, distribute, or use it in another
+project without my written permission. See the [LICENSE](./LICENSE) file for details.
