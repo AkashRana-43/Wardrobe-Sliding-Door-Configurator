@@ -1,3 +1,7 @@
+> **License notice:** This project was previously released under the MIT License.
+> As of DATE, it is no longer offered under MIT. The current version is shared
+> publicly for portfolio/recruiter review only. See [LICENSE](./LICENSE).
+
 # Wardrobe-Sliding-Door-Configurator
 React + TypeScript (Vite) wardrobe sliding door configurator with step-based state, per-door customisation, skeleton/lazy-loaded UI, and a data layer that works with dummy data or a Strapi API (optionally cached via Redis).
 
@@ -55,10 +59,3 @@ When enabled, the app fetches the same catalog entities from Strapi:
  - Skeleton loaders while fetching catalog data
  - Lazy loaded steps
  - Image lazy loading
-
-## License
-
-This project is **not open source**. It is shared publicly for portfolio/recruiter review only.
-
-You may view the code, but you may not copy, reuse, modify, distribute, or use it in another
-project without my written permission. See the [LICENSE](./LICENSE) file for details.
